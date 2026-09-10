@@ -2,7 +2,7 @@
 
 > **Đọc file này trước khi làm bất cứ gì.** Nó ghi lại toàn bộ trạng thái, các quyết định
 > kỹ thuật, cách kiểm thử, và những cái bẫy đã mất công mới tìm ra.
-> Cập nhật lần cuối: 2026-09-10, phiên 4 (cân bằng lại tiến hoá + Ấn Ký tầng 4 + hiệu ứng).
+> Cập nhật lần cuối: 2026-09-10, phiên 5 (cắt sức mạnh cuối game + chữa bệnh "không thể thua").
 
 ---
 
@@ -14,7 +14,7 @@ sống sót theo màn, nhặt EXP để lên cấp và chọn nâng cấp. Có *
 | Bản | Đường dẫn | Trạng thái |
 |---|---|---|
 | **Web** (bản gốc, chuẩn để đối chiếu) | `web/` | ✅ Hoàn chỉnh, đã kiểm thử kỹ |
-| **Unity** (port) | `Assets/` | ✅ Đủ nội dung, biên dịch sạch · ⚠️ **chưa build & chạy thật sau đợt port trùm** — xem mục 7 |
+| **Unity** (port) | `Assets/` | ✅ Đủ nội dung, biên dịch sạch · ⚠️ **chưa build & chạy thật sau đợt port trùm** · ⚠️ **CHƯA có đợt cân bằng phiên 5** — xem mục 5B & 7 |
 
 Chơi thử bản web ngay: mở `web/dist/NeonHorde.html` bằng trình duyệt (1 file, không cần mạng).
 Link đã xuất bản: <https://claude.ai/code/artifact/4ae35421-27da-45c3-b130-a3560571cd04>
@@ -148,6 +148,10 @@ Assets/Editor/
 ## 4B. LUẬT CHƠI (số liệu trích thẳng từ code, không phải trí nhớ)
 
 ### Vòng lặp một ván
+0. **TRẦN HỒI MÁU** (`G.HEAL_BASE` / `G.HEAL_LS`, thêm ở phiên 5 — xem mục 5B).
+   Hút máu · "hồi 2 máu mỗi mạng" của ẤN HUYẾT NGUYỆT · tim rơi ra từ quái — cả ba đều
+   rút chung một **hũ**, hũ đầy lại mỗi giây đúng `máu tối đa × (0,045 + hút máu × 1,1)`
+   và chứa tối đa `30% máu tối đa`. Hồi máu mỗi giây của BÙA HỒI SINH **đứng ngoài trần**.
 1. Mỗi màn dài `min(46, 30 + số màn)` giây. **Sống hết giờ là qua màn.**
 2. Qua màn: hồi **18% máu tối đa** + **1 nâng cấp miễn phí**, nghỉ 1,4 giây rồi vào màn sau.
    Quái còn sót bị xoá, mỗi con rơi 1 ngọc.
@@ -193,16 +197,19 @@ Tất cả nằm trong `spawnEnemy()` / `updateWave()` / `endWave()` của `game
 và `GameCtrl.cs` (Unity). Tên biến ghi kèm để tra ngược trong code:
 
 ```
-hpMul     = 1 + (w-1)*0.30 + w^1.75 * 0.014     // máu quái — màn 10 ≈ ×4.5
-dmgMul    = 1 + (w-1)*0.11                      // sát thương quái
-spdMul    = min(1.55, 1 + (w-1)*0.014)          // tốc độ quái
-interval  = max(0.13, 0.70 - w*0.035)           // giây giữa 2 lần sinh
-batch     = 1 + floor(w/3)                      // số con mỗi lần sinh
-cap       = min(260, 60 + w*14)                 // trần số quái cùng lúc
-elite     = random < min(0.16, 0.012 + w*0.008) // 5× máu, 1.45× to, 4× EXP, chậm hơn 12%
-waveDur   = min(46, 30 + w)                     // độ dài màn (giây)
-xpNext    = round(5 + cấp*4 + cấp^1.62)         // EXP cần để lên cấp
+ex        = w <= 10 ? 1.75 : 1.75 + (w-10)*0.012      // ★ số mũ dốc dần sau màn 10
+hpMul     = 1 + (w-1)*0.30 + w^ex * 0.014            // màn 10 ≈ ×4.5 (y như cũ)
+dmgMul    = 1 + (w-1)*0.11                            // sát thương quái
+spdMul    = min(1.55, 1 + (w-1)*0.014)                // tốc độ quái
+interval  = max(0.085, 0.70 - w*0.035)                // ★ sàn 0.13 -> 0.085 (chỉ ảnh hưởng w≥17)
+batch     = 1 + floor(w/3) + max(0, floor((w-12)/4))  // ★ tới màn 12 y như cũ
+cap       = min(260, 60 + w*14)                       // trần số quái cùng lúc
+elite     = random < min(0.24, 0.012 + w*0.008)       // ★ trần .16 -> .24 (dốc giữ nguyên)
+waveDur   = min(46, 30 + w)                           // độ dài màn (giây)
+xpNext    = round(5 + cấp*4 + cấp^1.62)               // EXP cần để lên cấp
 ```
+★ = đổi ở phiên 5. **Mọi thay đổi đều được thiết kế để màn 1–10 giữ nguyên y hệt bản cũ**,
+chỉ dốc lên từ màn 11 trở đi. Máu quái: màn 20 +12% · màn 35 +74% · màn 45 +165%.
 Quái sinh ra **ngay ngoài rìa màn hình** (không phải vòng tròn bán kính cố định) để vào trận nhanh.
 
 ---
@@ -211,24 +218,37 @@ Quái sinh ra **ngay ngoài rìa màn hình** (không phải vòng tròn bán k�
 
 `Cặp với` = trang bị phải lên **cấp 3** thì vũ khí (ở **cấp tối đa 8**) mới mở được TIẾN HOÁ.
 
+> **Cột "Cấp 1 → cấp 8" là số SAU đợt cắt phiên 5.** Quy tắc cắt: giữ nguyên sát thương
+> cấp 1, hạ sát thương cấp 8 xuống còn **55%**. Hồi chiêu và số lượng đạn theo cấp **không
+> đụng tới** — chính chúng mới là thứ làm việc lên cấp có cảm giác đã tay.
+
 | # | Vũ khí | Cặp với | Cấp 1 → cấp 8 | Tiến hoá |
 |---|---|---|---|---|
-| 1 | SÚNG XUNG KÍCH | ỐNG ĐẠN PHỤ | ST 15→45 · hồi 0,59→0,34s · 1→3 viên | **ĐẠN PHÂN LIỆT** — đạn giết được quái thì tách 2 viên con truy đuổi, 2 đời |
-| 2 | SÚNG SĂN | NGỌC CƯỜNG LỰC | ST 11→31 · hồi 1,10→0,71s · 4→9 viên | **PHÁO HẠM** — 1 quả pháo khổng lồ xuyên tất cả, rải chuỗi nổ dọc đường |
-| 3 | KIẾM XOAY | ĐÁ MỞ RỘNG | ST 20→58 · 2→6 lưỡi · bán kính 83→118 | **THIÊN LUÂN** — 2 vòng kiếm quay ngược chiều, mỗi nhát bắn ra sóng xung kích |
-| 4 | LÔI KÍCH | NGỌC CƯỜNG LỰC | ST 28→84 · hồi 1,42→0,82s · lan 2→8 | **LÔI VŨ** — 8 tia sét giáng từ trời, để lại vũng điện |
-| 5 | BOM RẢI | ĐÁ MỞ RỘNG | ST 41→118 · hồi 1,80→1,10s · nổ 93→142 · 1→3 quả | **BOM HẠT NHÂN** — nổ lớn + 3 bom con + hố phóng xạ cháy 4 giây |
-| 6 | TIA TỬ THẦN | ĐỒNG HỒ CÁT | ST 38→122 · hồi 1,65→0,95s · dày 14→31 | **LĂNG KÍNH** — laser nảy 8 lần, mỗi lần một màu cầu vồng |
-| 7 | BĂNG VỰC | ĐÁ MỞ RỘNG | ST 18→56 · hồi 2,27→1,36s · nổ 146→258 · chậm 39→67% | **BÃO TUYẾT VĨNH CỬU** — vùng băng bám theo người chơi suốt màn |
-| 8 | TÊN LỬA TẦM NHIỆT | ỐNG ĐẠN PHỤ | ST 31→90 · hồi 1,42→0,86s · 1→5 quả | **HOẢ TIỄN OANH TẠC** — loạt 12 quả bay vòng cung rơi khắp màn hình |
-| 9 | HÀO QUANG HUỶ DIỆT | ĐÁ MỞ RỘNG | ST 13→39 mỗi 0,5s · bán kính 103→180 | **LÒ PHẢN ỨNG** — nở to theo số quái bên trong + phóng điện tới tất cả |
-| 10 | PHI TIÊU HỒI | KÍNH SÁT THỦ | ST 23→68 · hồi 1,19→0,77s · 1→3 phi tiêu | **LƯỠI HÁI TỬ THẦN** — bay mãi không về, chém trúng thì to & mạnh thêm 9% (tối đa 12 lần) |
+| 1 | SÚNG XUNG KÍCH | ỐNG ĐẠN PHỤ | ST 15→25 · hồi 0,59→0,34s · 1→3 viên | **ĐẠN PHÂN LIỆT** — đạn giết được quái thì tách 2 viên con truy đuổi, 2 đời |
+| 2 | SÚNG SĂN | NGỌC CƯỜNG LỰC | ST 11→17 · hồi 1,10→0,71s · 4→9 viên | **PHÁO HẠM** — 1 quả pháo khổng lồ xuyên tất cả, rải chuỗi nổ dọc đường |
+| 3 | KIẾM XOAY | ĐÁ MỞ RỘNG | ST 20→32 · 2→6 lưỡi · bán kính 83→118 | **THIÊN LUÂN** — 2 vòng kiếm quay ngược chiều, mỗi nhát bắn ra sóng xung kích |
+| 4 | LÔI KÍCH | NGỌC CƯỜNG LỰC | ST 28→46 · hồi 1,42→0,82s · lan 2→8 | **LÔI VŨ** — **3** tia sét giáng từ trời mỗi loạt, để lại vũng điện |
+| 5 | BOM RẢI | ĐÁ MỞ RỘNG | ST 41→65 · hồi 1,80→1,10s · nổ 93→142 · 1→3 quả | **BOM HẠT NHÂN** — nổ lớn + 2 bom con + hố phóng xạ cháy 4 giây |
+| 6 | TIA TỬ THẦN | ĐỒNG HỒ CÁT | ST 38→67 · hồi 1,65→0,95s · dày 14→31 | **LĂNG KÍNH** — laser nảy **4** lần, mỗi lần một màu cầu vồng |
+| 7 | BĂNG VỰC | ĐÁ MỞ RỘNG | ST 18→31 · hồi 2,27→1,36s · nổ 146→258 · chậm 39→67% | **BÃO TUYẾT VĨNH CỬU** — vùng băng bám theo người chơi suốt màn |
+| 8 | TÊN LỬA TẦM NHIỆT | ỐNG ĐẠN PHỤ | ST 31→50 · hồi 1,42→0,86s · 1→5 quả | **HOẢ TIỄN OANH TẠC** — loạt **4** quả bay vòng cung rơi khắp màn hình |
+| 9 | HÀO QUANG HUỶ DIỆT | ĐÁ MỞ RỘNG | ST 13→22 mỗi 0,5s · bán kính 103→180 | **LÒ PHẢN ỨNG** — nở to theo số quái bên trong + phóng điện tới tất cả |
+| 10 | PHI TIÊU HỒI | KÍNH SÁT THỦ | ST 23→37 · hồi 1,19→0,77s · 1→3 phi tiêu | **LƯỠI HÁI TỬ THẦN** — bay mãi không về, chém trúng thì to & mạnh thêm 4,5% (tối đa 6 lần) |
 
 **Kiếm Xoay không có hồi chiêu** — nó chạy liên tục mỗi khung hình (`Continuous`/`passive: true`),
 mỗi quái chỉ ăn đòn 1 lần / 0,42 giây (`bladeCd`).
 
-**`evoCd`** = hệ số hồi chiêu riêng cho bản tiến hoá. Hiện tại: súng xung kích 0,85 ·
-súng săn 0,58 · laser 0,70 · lôi kích 1,00 · bom 1,35. Còn lại mặc định 1,0.
+**`evoCd`** = hệ số hồi chiêu riêng cho bản tiến hoá (>1 = **bắn thưa hơn** bản thường).
+Sau phiên 5: súng xung kích **1,00** · súng săn **0,85** · lôi kích **3,60** · bom **1,75** ·
+laser **1,35** · tên lửa **2,10** · phi tiêu **1,25**. Kiếm xoay / băng vực / hào quang không có.
+
+**Đây là núm chính của đợt cắt phiên 5** — người dùng phàn nàn "hiệu ứng sét đánh từ trên
+trời nhiều quá", nên phần lớn sức mạnh bị lấy đi qua **tần suất** chứ không qua sát thương:
+
+| Bản tiến hoá | Số hiệu ứng mỗi giây trước | Sau |
+|---|---|---|
+| LÔI VŨ (tia sét) | 4,75 tia/giây | **1,05 tia/giây** (còn 22%) |
+| HOẢ TIỄN OANH TẠC | 7,2 quả/giây | **2,2 quả/giây** (còn 31%) |
 
 ---
 
@@ -329,6 +349,10 @@ Soak liên tục 20 phút tới màn 27, 45.843 kill, 5 trùm liên tiếp, lu�
 
 **Luôn cân bằng bằng bàn sát thương/giây trên tank.** Bàn kill/giây chỉ để kiểm tra cảm giác.
 
+> ⚠️ **Hai bảng số ngay dưới đây (phiên 4) đo bằng một bàn đo SAU NÀY MỚI PHÁT HIỆN LÀ HỎNG**
+> — nó để `UI.showLevelUp` chạy tự do nên trong lúc đo bot vẫn mọc thêm vũ khí/trang bị.
+> Giữ lại để hiểu lịch sử, **đừng dùng làm mốc**. Số đáng tin nằm ở **mục 5B**.
+
 ### Số đo GỐC (trước đợt cân bằng 2026-09-10) — sát thương/giây trên tank
 
 | Vũ khí | Cấp 8 | Tiến hoá | Gấp |
@@ -358,26 +382,90 @@ Sức mạnh thật nằm ở **vũ khí cấp 8** + chồng chỉ số bị đ�
 Muốn cắt tổng thật sự thì phải cắt cả cấp 8 **và** cắt máu quái theo màn cùng lúc — đổi cặp,
 không đổi lẻ.
 
-### Số đo SAU đợt cân bằng (mục tiêu: mọi tiến hoá ≈ 1,6× cấp 8 của chính nó)
+---
 
-| Tiến hoá | Gấp cấp 8 (gốc) | Gấp cấp 8 (nay) |
+## 5B. ĐỢT CẮT PHIÊN 5 (2026-09-10) — SỐ ĐÁNG TIN, ĐO BẰNG BÀN ĐO ĐÃ SỬA
+
+Người dùng yêu cầu hai việc:
+1. *"Giảm sức mạnh tất cả vũ khí cấp max (đột phá cấp cuối) còn 1/3, ví dụ tia sét đang
+   đánh 10 phát/giây thì còn 2 phát/giây."*
+2. *"Về sau quái trở nên quá yếu, chúng ta quá mạnh khiến không thể thua."*
+
+### Cách cắt (quy tắc, không phải chỉnh mò)
+- **Cấp 8**: giữ nguyên sát thương cấp 1, hạ sát thương cấp 8 còn **55%** (đổi `stat(lv)`
+  thành `nền' + lv*bước'` với `nền'+bước' = nền+bước` và `nền'+8·bước' = 0,55·(nền+8·bước)`).
+  Hồi chiêu / số đạn theo cấp **không đụng** → lên cấp vẫn đã tay.
+- **Tiến hoá**: kéo mỗi bản về **≈1,3–1,6× chính cấp 8 của nó**, phần lớn bằng **tần suất**
+  (`evoCd`, số tia/số quả mỗi loạt) đúng như người dùng mô tả.
+
+### Bàn đo: 40 con `tank` máu màn 10 · người chơi đứng yên · chỉ số trung tính · không chí mạng · 3×20 giây
+
+| Vũ khí | Cấp 8 trước | Cấp 8 sau | Tiến hoá trước | Tiến hoá sau | Gấp trước | Gấp sau |
+|---|---|---|---|---|---|---|
+| PHI TIÊU HỒI | 2424 | 1644 | **15613** | 2130 | **6,44×** | 1,30× |
+| BOM RẢI | 3112 | 2556 | 4021 | 3099 | 1,29× | 1,21× |
+| KIẾM XOAY | 1907 | 1194 | 3471 | 1960 | 1,82× | 1,64× |
+| HÀO QUANG | 2120 | 1191 | 2733 | 1782 | 1,29× | 1,50× |
+| TIA TỬ THẦN | 970 | 575 | 2255 | 842 | 2,32× | 1,46× |
+| BĂNG VỰC | 1281 | 801 | 2221 | 1179 | 1,73× | 1,47× |
+| TÊN LỬA | 487 | 282 | 1170 | 392 | 2,40× | 1,39× |
+| SÚNG SĂN | 378 | 208 | 997 | 327 | 2,64× | 1,57× |
+| SÚNG XUNG KÍCH | 355 | 205 | 829 | 315 | 2,34× | 1,54× |
+| LÔI KÍCH | 529 | 296 | 929 | 433 | 1,76× | 1,46× |
+| **TỔNG** | **13 563** | **8 952 (66%)** | **34 239** | **12 459 (36%)** | 1,29–6,44× | **1,21–1,64×** |
+
+**Kết quả: tiến hoá còn ~36% — đúng con số "1/3" người dùng xin.** Cấp 8 còn 66%.
+Và không bản tiến hoá nào tụt xuống dưới cấp 8 của chính nó, nên thẻ TIẾN HOÁ vẫn là
+nâng cấp thật chứ không thành thẻ hạ cấp.
+
+> 🔑 **Vì sao phải hạ CẢ cấp 8 chứ không chỉ hạ tiến hoá.** Trước phiên 5 trung bình
+> tiến hoá chỉ mạnh ~2,3 lần cấp 8. Nếu chỉ cắt tiến hoá còn 1/3 thì nó thành **0,77 lần**
+> cấp 8 — thẻ TIẾN HOÁ biến thành thẻ hạ cấp. Muốn tổng thật sự còn 1/3 thì bắt buộc phải
+> đổi cặp. Đây chính là điều mục 5 đã cảnh báo từ phiên 4, nay đã làm.
+
+### Chữa bệnh "cuối game không thể thua"
+
+Đo được bằng `__late()` (bot mang bộ hoàn thiện thả thẳng vào màn cao):
+**bot đi từ màn 15 tới màn 36 mà KHÔNG mất một giọt máu** (210/210), 12 000 kill.
+Nó **vẫn ăn 2 800–5 000 sát thương** trong 120 giây — nhưng hồi lại còn nhanh hơn.
+
+Thủ phạm không phải sát thương mà là **hồi máu không có trần**:
+
+| Nguồn | Vì sao phình vô hạn |
+|---|---|
+| Hút máu (HUYẾT ẤN · ẤN HUYẾT NGUYỆT tầng 1) | tỉ lệ **sát thương gây ra** |
+| ẤN HUYẾT NGUYỆT tầng 3: hồi 2 máu mỗi mạng | ~100 mạng/giây ⇒ **200 máu/giây** |
+| Tim rơi ra (2,2% quái thường · 35% tinh anh) | tỉ lệ **số mạng** ⇒ ~180 máu/giây ở màn 35 |
+
+Máu tối đa thì cố định (~210). Ba nguồn trên cộng lại vượt xa mọi thứ quái gây ra.
+
+**Cách chữa — gom cả ba vào một hũ có trần** (`G.HEAL_BASE = .045`, `G.HEAL_LS = 1.1`):
+```
+hũ đầy lại mỗi giây = máu tối đa × (0.045 + hút máu × 1.1)
+sức chứa của hũ     = max(1.2 giây hồi, 30% máu tối đa)
+```
+Sức chứa `30% máu tối đa` là **bắt buộc**: không có nó thì đầu game hũ chỉ giữ ~4 máu,
+một trái tim 14 máu ăn vào chỉ được 4 → tim thành vô dụng. Ở màn cao 30% là hạt cát.
+**Hồi máu mỗi giây của BÙA HỒI SINH cố ý đứng ngoài trần** — nó là con số cố định, không phình.
+
+Cộng thêm đường cong độ khó dốc lên từ màn 11 (mục 4B).
+
+### Kết quả sau khi chữa — bot mang bộ hoàn thiện, 120 giây mỗi lần
+
+| Thả vào màn | Trước | Sau |
 |---|---|---|
-| LÔI VŨ | 11,7× | ~1,6× |
-| HOẢ TIỄN OANH TẠC | 7,2× | ~1,6× |
-| PHÁO HẠM | 5,7× | ~1,6× |
-| LĂNG KÍNH | 3,1× | ~1,6× |
-| ĐẠN PHÂN LIỆT | 2,6× | ~1,6× |
-| LƯỠI HÁI TỬ THẦN | 1,9× | ~1,6× |
-| BOM HẠT NHÂN | 1,7× | ~1,6× |
-| BÃO TUYẾT VĨNH CỬU | 1,3× | ~1,6× |
-| LÒ PHẢN ỨNG | 1,1× | ~1,6× |
-| THIÊN LUÂN | 0,9× (hạ cấp!) | ~1,6× |
+| 12 | đầy máu | đầy máu (thoải mái) |
+| 15 | đầy máu | đầy máu |
+| 20 | đầy máu | **còn 41% máu** |
+| 30 | đầy máu | căng, có lần đầy máu có lần tụt sâu |
+| 35 | đầy máu | **chết ở giây 88** |
+| 40–45 | đầy máu | **chết ở giây 100–110** |
 
-**Tổng còn ~64% so với gốc. Chênh lệch 13 lần → ~2 lần.** Ba con lệch chuẩn bị cắt xuống
-còn **1/7 – 1/4** sức mạnh tương đối cũ — đó mới là thứ gây cảm giác "phá game".
+Ván đấu vẫn đi được tới màn 30+, nhưng từ màn 35 trở đi là **chết thật**.
 
-Ba vũ khí tầm gần (hào quang · kiếm xoay · băng vực) đặt hệ số **1,6 bằng lập luận**,
-không theo số đo, vì bàn đo nhiễu với chúng (xem bảng cạm bẫy ở trên).
+---
+
+## 5C. NÚM VẶN & CẢNH BÁO CHUNG (từ phiên 4, vẫn đúng)
 
 ### Ấn Ký tầng 4 — đã cắt xuống ~1/3 (không vướng sàn nào vì là sức mạnh cộng thêm thuần)
 
@@ -402,6 +490,10 @@ không theo số đo, vì bàn đo nhiễu với chúng (xem bảng cạm bẫy 
   (<1 = bắn nhanh hơn, >1 = chậm hơn). Đây là núm hiệu quả và an toàn nhất.
 - Sát thương / bán kính / số lượng nằm ngay trong hàm `fire()` của từng vũ khí.
 - `Cam.SHAKE_CAP` (web `gfx.js`) / `Fx.SHAKE_CAP` (Unity) = 20, có **giảm dần**.
+- **`G.HEAL_BASE` / `G.HEAL_LS`** (phiên 5) — trần hồi máu. Muốn cuối game **dễ hơn** thì
+  tăng, **khó hơn** thì giảm. Đây là núm mạnh nhất để điều chỉnh "có thể thua hay không".
+- **`ex` trong `spawnEnemy`** (phiên 5) — độ dốc máu quái sau màn 10 (`.012` mỗi màn).
+  Đặt về `1.75` cố định là quay lại đường cong cũ.
 
 ### Cảnh báo khi cân bằng
 - **Hiệu ứng ngưỡng**: Lưỡi Hái nhảy từ 2,7 lên 23,5 kill/giây chỉ vì sát thương vượt qua
@@ -417,15 +509,55 @@ không theo số đo, vì bàn đo nhiễu với chúng (xem bảng cạm bẫy 
 
 ### Web — server tạm + chạy JS trong trình duyệt
 ```powershell
-# server tĩnh viết bằng PowerShell (KHÔNG có node/python)
-# script mẫu nằm ở thư mục scratchpad của phiên; nếu mất thì viết lại bằng System.Net.Sockets.TcpListener
-Start-Process powershell -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File','serve.ps1','-Port','8125','-Root','<duong dan web>') -WindowStyle Hidden
+# server tĩnh viết bằng PowerShell (KHÔNG có node/python) — đã lưu ở web\tools\serve.ps1
+powershell -ExecutionPolicy Bypass -File web\tools\serve.ps1 -Port 8125 -Root web
+# (chạy nền: dùng tham số run_in_background của công cụ PowerShell, ĐỪNG dùng Start-Process
+#  — đã thử, tiến trình con chết ngay và cổng không mở)
 ```
 Rồi mở `http://localhost:8125/index.html` trong Browser pane.
 
 > ⚠️ **Browser pane KHÔNG cấp khung hình** (`requestAnimationFrame` không chạy, `innerWidth` = 0).
 > Muốn chạy game phải **tự bước thủ công**: `for(i=0;i<n;i++) G.update(1/60)` và gán tay
 > `Cam.W=1280; Cam.H=720;` mỗi vòng. Đè `Input.update` để giả lập bot điều khiển.
+
+> 🔥 **HAI CÁI BẪY LÀM SAI TOÀN BỘ SỐ ĐO — phiên 5 mất rất nhiều công mới tìm ra.**
+>
+> **(a) `main.js` có vòng lặp DỰ PHÒNG bằng `setTimeout`.** Vì rAF không chạy trong Browser
+> pane, sau 600 ms nó bật vòng `setTimeout(step, 16)`. Vòng này **tiếp tục chơi game GIỮA
+> hai lệnh `javascript_exec` của bạn** → cùng một hạt giống ngẫu nhiên cho ra kết quả khác
+> nhau mỗi lần, và trạng thái đo bị đẩy đi lung tung. Cách tắt (đứt hẳn chuỗi setTimeout
+> vì nó không có try/catch):
+> ```js
+> const od = G.draw; let armed = true;
+> G.draw = function () { if (armed) { armed = false; G.draw = od; throw new Error('stop'); }
+>                        return od.apply(this, arguments); };
+> ```
+>
+> **(b) Phải vô hiệu hoá `UI.showLevelUp` khi đo một vũ khí.** Nếu để nguyên, lần lên cấp
+> đầu tiên đặt `G.state='levelup'` và `G.update()` thoát ngay → số đo **tụt giả**. Nếu để
+> bot tự chọn thẻ thì vũ khí/trang bị **mọc thêm giữa lúc đo** → số đo **phồng giả**
+> (đã đo pistol 359 dps trong khi trần lý thuyết chỉ 216). Đặt nó thành hàm rỗng và
+> gán `G.pendingLevels = 0` mỗi khung hình.
+>
+> **Luôn đối chiếu số đo với trần lý thuyết `dmg × số đạn / hồi chiêu`.** Chính phép kiểm
+> tra một dòng này mới lộ ra bẫy (b). Nếu số đo vượt trần → bàn đo đang hỏng.
+>
+> Bàn đo + bot của phiên 5 đã được **lưu vào repo**: `web/tools/bench.js`
+> (`__killLoop`, `__bench`, `__table`, `__soak`, `__late`, `__BUILD`) và server tĩnh
+> `web/tools/serve.ps1`. Thư mục `tools/` **không** được `index.html` hay `build.ps1` nạp,
+> nên nó không ảnh hưởng game. Cách dùng:
+> ```powershell
+> powershell -ExecutionPolicy Bypass -File web\tools\serve.ps1 -Port 8125 -Root web
+> ```
+> rồi mở `http://localhost:8125/index.html` trong Browser pane và chạy:
+> ```js
+> const t = await fetch('/tools/bench.js').then(r => r.text()); (0, eval)(t);
+> __killLoop();                                  // BẮT BUỘC, xem bẫy (a)
+> __table(['pistol','shotgun','blade']);         // bảng sát thương/giây
+> __late('ranger', 35, 120, __BUILD);            // thả bot vào màn 35 với bộ hoàn thiện
+> ```
+> **Mỗi lệnh `javascript_exec` chỉ chịu được ~45 giây** → chia bảng ra 3–4 vũ khí một lần.
+> Nạp lại trang thì phải gọi `__killLoop()` lại.
 
 Mẫu bot né quái dùng lại được:
 ```js
@@ -472,7 +604,11 @@ C:\Temp\nhwin\NeonHorde.exe -nhsmoke -nhduration 75 -nhshot C:\Temp\shot.png `
 ### ✅ Đã xong và đã kiểm chứng
 - Bản web: đầy đủ, chạy sạch lỗi qua nhiều lần soak 200–300 giây, 4 nhân vật, có trùm.
 - Bản web: 5 Ấn Ký, 10 tiến hoá, điều khiển chuột/cảm ứng, cân bằng đã đo.
-- Bản web: 8 trùm + LUẬT ĐẤU TRƯỜNG, `dist/` đã build lại (00:56, mới hơn mọi file nguồn).
+- Bản web: 8 trùm + LUẬT ĐẤU TRƯỜNG, `dist/` đã build lại (10:54, mới hơn mọi file nguồn).
+- **Phiên 5 (mục 5B)**: cắt sức mạnh cuối game (tiến hoá còn 36%, cấp 8 còn 66%) và chữa
+  bệnh "không thể thua" bằng trần hồi máu + đường cong độ khó dốc lên từ màn 11.
+  Đo lại toàn bộ 10 vũ khí × 2 dạng bằng bàn đo đã sửa · bot thả vào màn 12/20/30/35/40/45
+  · 0 lỗi, 0 NaN. Đã build lại `dist/`.
 - Bản Unity: **đã biên dịch sạch cả hai lần** — Editor tự dựng lúc 23:48:13 (0 `error CS`,
   0 exception, 0 NaN trong `Editor.log`, có vào Play mode), và đợt port 8 trùm được
   kiểm tra kiểu lại lúc 01:16 (xem thủ thuật bên dưới).
@@ -513,6 +649,13 @@ Cần nhìn tận mắt mấy thứ chỉ lộ khi chạy:
   nhãn `_split` + trần 240 con, nhưng phải nhìn thật).
 
 ### 📋 Khác biệt còn lại giữa hai bản
+- ❌ **ĐỢT CÂN BẰNG PHIÊN 5 CHƯA PORT SANG UNITY** (người dùng nói để tính sau). Cần đổi:
+  · 10 hàm `stat(lv)` trong `GameData.cs` (sát thương cấp 8 còn 55%, cấp 1 giữ nguyên)
+  · 7 giá trị `EvoCd` · các hệ số trong `fire()` của từng bản tiến hoá
+  · `GameCtrl.cs`: `HEAL_BASE`/`HEAL_LS` + hũ hồi máu (hút máu · tim · ẤN HUYẾT NGUYỆT tầng 3)
+  · `GameCtrl.cs`: `ex` trong `SpawnEnemy`, `interval`/`batch`/`elite` trong `UpdateWave`
+  · `Sigils.cs`: `onKill` của bloodmoon rút từ hũ
+  Bảng số đầy đủ ở **mục 5B** — port theo bảng đó, đừng đo lại từ đầu.
 - ✅ 8 trùm + LUẬT ĐẤU TRƯỜNG: **đã port xong sang Unity** (2026-09-10).
 - ✅ Lớp phủ đóng băng toàn màn hình: đã có (`sigilTint` trong `UIRoot`).
 - Unity chưa dùng LitMotion (người dùng đã cài sẵn cho việc này).
@@ -563,6 +706,23 @@ Ghi lại để đừng dẫm lại:
 
 9. **Đường dẫn dài làm Unity crash.** Thư mục scratch của phiên chat dài >248 ký tự →
    Unity crash khi tạo project. Phải để project ở đường dẫn ngắn.
+
+10. **Mọi thứ hồi máu theo SÁT THƯƠNG hay SỐ MẠNG đều phình vô hạn.** Hút máu, "hồi N máu
+    mỗi mạng", tim rơi ra từ quái — cả ba tăng cùng sức mạnh người chơi, còn máu tối đa
+    thì cố định, nên cuối game người chơi **bất tử** (đo được: màn 35 ăn 5085 sát thương
+    trong 120 giây mà vẫn đầy máu). Đã gom cả ba vào **một hũ có trần** (`G.HEAL_BASE` /
+    `G.HEAL_LS`, mục 5B). Nếu sau này thêm nguồn hồi máu mới nào tỉ lệ với sát thương hay
+    số mạng thì **phải cho nó rút từ hũ này**, đừng cộng máu trực tiếp.
+
+11. **Bàn đo tự chơi rất dễ hỏng mà không báo lỗi.** Xem hai bẫy (a) vòng lặp `setTimeout`
+    dự phòng của `main.js` và (b) `UI.showLevelUp` ở mục 6. Cả hai đều cho ra con số trông
+    hợp lý nhưng sai tới 2–3 lần. **Cách phát hiện duy nhất: so số đo với trần lý thuyết
+    `sát thương × số đạn / hồi chiêu`.** Đã một lần chỉnh cân bằng cả buổi trên số liệu sai.
+
+12. **`resetEnemy` không xoá `e._split`.** Quái lấy lại từ Pool có thể còn nhãn `_split` cũ,
+    nên nó sẽ không tách nữa (an toàn, chỉ hơi khác thiết kế). Chưa sửa vì lệch về phía an
+    toàn — nhưng nếu sau này thêm cờ nào mà lệch về phía NGUY HIỂM thì phải xoá trong
+    `resetEnemy`, không thì nó sống dai qua nhiều ván.
 
 ---
 

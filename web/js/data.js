@@ -51,11 +51,11 @@ const WEAPONS = {
 
   /* ---------- 1. PISTOL ---------- */
   pistol: {
-    name: 'SÚNG XUNG KÍCH', color: '#25f4ee', max: 8, pairId: 'proj', evoCd: .7,
+    name: 'SÚNG XUNG KÍCH', color: '#25f4ee', max: 8, pairId: 'proj', evoCd: 1.0,
     evoName: 'ĐẠN PHÂN LIỆT',
     evoDesc: 'Viên đạn nào <em>hạ gục</em> kẻ địch sẽ <em>tách thành 2 viên con tự truy đuổi</em> — con lại tách tiếp một lần nữa, tạo phản ứng dây chuyền quét sạch màn hình.',
     tip: 'Bắn nhanh vào kẻ địch gần nhất.',
-    stat: lv => ({ dmg: 11 + lv * 4.2, cd: 0.62 - lv * 0.035, n: 1 + (lv >= 4 ? 1 : 0) + (lv >= 7 ? 1 : 0), spd: 640 }),
+    stat: lv => ({ dmg: 13.87 + lv * 1.33, cd: 0.62 - lv * 0.035, n: 1 + (lv >= 4 ? 1 : 0) + (lv >= 7 ? 1 : 0), spd: 640 }),
     desc(lv) { const s = this.stat(lv); return `Sát thương <em>${Math.round(s.dmg)}</em> · ${s.n} viên · ${(1 / s.cd).toFixed(1)}/giây`; },
     icon(g, r) {
       g.strokeStyle = '#25f4ee'; g.lineWidth = 5; g.lineCap = 'round';
@@ -88,11 +88,11 @@ const WEAPONS = {
 
   /* ---------- 2. SHOTGUN ---------- */
   shotgun: {
-    name: 'SÚNG SĂN', color: '#ffc93c', max: 8, pairId: 'pow', evoCd: .48,
+    name: 'SÚNG SĂN', color: '#ffc93c', max: 8, pairId: 'pow', evoCd: 1.0,
     evoName: 'PHÁO HẠM',
     evoDesc: 'Không còn bắn chùm: nã <em>một quả đạn pháo khổng lồ</em> bay chậm, <em>xuyên qua tất cả</em> và <em>rải một chuỗi vụ nổ</em> dọc đường đi.',
     tip: 'Bắn chùm đạn hình nón, cực mạnh ở cự ly gần.',
-    stat: lv => ({ dmg: 8 + lv * 2.9, cd: 1.15 - lv * 0.055, n: 4 + Math.floor(lv * .7), spd: 560, spread: .62 }),
+    stat: lv => ({ dmg: 10.0 + lv * 0.89, cd: 1.15 - lv * 0.055, n: 4 + Math.floor(lv * .7), spd: 560, spread: .62 }),
     desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> viên × <em>${Math.round(s.dmg)}</em> sát thương`; },
     icon(g, r) {
       g.strokeStyle = '#ffc93c'; g.lineWidth = 5; g.lineCap = 'round';
@@ -115,7 +115,7 @@ const WEAPONS = {
           x: p.x, y: p.y, a: base, spd: 290, dmg: s.dmg * .42 * G.stats.damage,
           sprite: 'b_bomb', color: '#ffb02e', r: 26 * A,
           life: 2.6, pierce: 999, scale: A, knock: 300, spin: 5,
-          trailBoom: { t: .12, r: 82 * A, dmg: s.dmg * .24 * G.stats.damage, color: '#ffb02e' },
+          trailBoom: { t: .18, r: 82 * A, dmg: s.dmg * .24 * G.stats.damage, color: '#ffb02e' },
           aoe: { r: 160 * A, dmg: s.dmg * .45 * G.stats.damage, color: '#ffb02e', big: true }
         });
         Sfx.shoot('shotgun'); Sfx.explode(false);
@@ -146,7 +146,7 @@ const WEAPONS = {
     evoName: 'THIÊN LUÂN',
     evoDesc: '<em>Hai vòng kiếm quay ngược chiều nhau</em>, và <em>mỗi nhát chém bắn ra một sóng xung kích</em> chém lan sang kẻ địch bên cạnh.',
     tip: 'Lưỡi kiếm bay quanh bạn, chém mọi thứ chạm vào.',
-    stat: lv => ({ dmg: 14 + lv * 5.5, n: 2 + Math.floor(lv / 2), rot: 2.5 + lv * .12, rad: 78 + lv * 5 }),
+    stat: lv => ({ dmg: 17.73 + lv * 1.77, n: 2 + Math.floor(lv / 2), rot: 2.5 + lv * .12, rad: 78 + lv * 5 }),
     desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> lưỡi · <em>${Math.round(s.dmg)}</em> sát thương/chạm`; },
     icon(g, r) {
       g.strokeStyle = '#25f4ee'; g.lineWidth = 3;
@@ -165,11 +165,11 @@ const WEAPONS = {
 
   /* ---------- 4. CHAIN LIGHTNING ---------- */
   lightning: {
-    name: 'LÔI KÍCH', color: '#9d6bff', max: 8, pairId: 'pow', evoCd: 1.25,
+    name: 'LÔI KÍCH', color: '#9d6bff', max: 8, pairId: 'pow', evoCd: 3.6,
     evoName: 'LÔI VŨ',
-    evoDesc: 'Không lan nữa — <em>gọi 8 tia sét giáng thẳng từ trời</em>, mỗi chỗ rơi để lại một <em>vũng điện thiêu đốt</em>.',
+    evoDesc: 'Không lan nữa — <em>gọi 3 tia sét giáng thẳng từ trời</em>, thưa hơn hẳn nhưng <em>mỗi tia nặng gấp bội</em>, mỗi chỗ rơi để lại một <em>vũng điện thiêu đốt</em>.',
     tip: 'Sét đánh kẻ địch rồi lan sang mục tiêu kế bên.',
-    stat: lv => ({ dmg: 20 + lv * 8, cd: 1.5 - lv * .085, chain: 2 + Math.floor(lv * .8), range: 300 }),
+    stat: lv => ({ dmg: 25.4 + lv * 2.6, cd: 1.5 - lv * .085, chain: 2 + Math.floor(lv * .8), range: 300 }),
     desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg)}</em> sát thương · lan <em>${s.chain}</em> mục tiêu`; },
     icon(g, r) {
       g.fillStyle = '#c9a8ff'; g.strokeStyle = '#9d6bff'; g.lineWidth = 2;
@@ -183,7 +183,7 @@ const WEAPONS = {
       if (w.evolved) {
         // LÔI VŨ — sét giáng từ trời, để lại vũng điện
         if (!G.nearestEnemy(p.x, p.y, 900)) return false;
-        G.thunderRain(5 + Math.floor(G.stats.proj / 2), s.dmg * .15 * G.stats.damage, s.dmg * .04 * G.stats.damage);
+        G.thunderRain(3 + Math.floor(G.stats.proj / 3), s.dmg * .62 * G.stats.damage, s.dmg * .16 * G.stats.damage);
         Sfx.shoot('lightning');
         return true;
       }
@@ -198,11 +198,11 @@ const WEAPONS = {
 
   /* ---------- 5. BOMB ---------- */
   bomb: {
-    name: 'BOM RẢI', color: '#ffb02e', max: 8, pairId: 'area', evoCd: 1.25,
+    name: 'BOM RẢI', color: '#ffb02e', max: 8, pairId: 'area', evoCd: 1.75,
     evoName: 'BOM HẠT NHÂN',
-    evoDesc: 'Vụ nổ khổng lồ văng ra 5 quả bom con, và để lại <em>hố phóng xạ cháy 5 giây</em> ngay tại tâm.',
+    evoDesc: 'Vụ nổ khổng lồ văng ra <em>2 quả bom con</em>, và để lại <em>hố phóng xạ cháy 4 giây</em> ngay tại tâm.',
     tip: 'Ném bom nổ diện rộng.',
-    stat: lv => ({ dmg: 30 + lv * 11, cd: 1.9 - lv * .1, r: 86 + lv * 7, n: 1 + Math.floor(lv / 4) }),
+    stat: lv => ({ dmg: 37.59 + lv * 3.41, cd: 1.9 - lv * .1, r: 86 + lv * 7, n: 1 + Math.floor(lv / 4) }),
     desc(lv) { const s = this.stat(lv); return `Nổ <em>${Math.round(s.dmg)}</em> sát thương · bán kính <em>${Math.round(s.r)}</em>`; },
     icon(g, r) {
       g.fillStyle = '#3a3f5c'; g.strokeStyle = '#ffb02e'; g.lineWidth = 2.5;
@@ -224,11 +224,11 @@ const WEAPONS = {
           r: 11, life: d / 340, scale: G.stats.area, spin: 9, lob: true,
           aoe: {
             r: s.r * G.stats.area * (w.evolved ? 1.10 : 1),
-            dmg: s.dmg * G.stats.damage * (w.evolved ? 1.33 : 1),
+            dmg: s.dmg * G.stats.damage * (w.evolved ? 1.55 : 1),
             color: '#ffb02e', big: true,
             cluster: w.evolved ? 2 : 0,
             // BOM HẠT NHÂN: để lại hố phóng xạ cháy 4 giây
-            crater: w.evolved ? { life: 4, dps: s.dmg * .28 * G.stats.damage } : null
+            crater: w.evolved ? { life: 4, dps: s.dmg * .33 * G.stats.damage } : null
           }
         });
         any = true;
@@ -240,11 +240,11 @@ const WEAPONS = {
 
   /* ---------- 6. LASER ---------- */
   laser: {
-    name: 'TIA TỬ THẦN', color: '#ff2e88', max: 8, pairId: 'haste', evoCd: .95,
+    name: 'TIA TỬ THẦN', color: '#ff2e88', max: 8, pairId: 'haste', evoCd: 1.35,
     evoName: 'LĂNG KÍNH',
-    evoDesc: 'Tia laser <em>nảy 6 lần</em> giữa các kẻ địch, <em>mỗi lần nảy đổi một màu cầu vồng</em> và vẫn xuyên thấu toàn bộ.',
+    evoDesc: 'Tia laser <em>nảy 4 lần</em> giữa các kẻ địch, <em>mỗi lần nảy đổi một màu cầu vồng</em> và vẫn xuyên thấu toàn bộ.',
     tip: 'Tia laser xuyên qua toàn bộ kẻ địch trên đường đi.',
-    stat: lv => ({ dmg: 26 + lv * 12, cd: 1.75 - lv * .1, w: 12 + lv * 2.4, len: 900 }),
+    stat: lv => ({ dmg: 33.84 + lv * 4.16, cd: 1.75 - lv * .1, w: 12 + lv * 2.4, len: 900 }),
     desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg)}</em> sát thương xuyên thấu · dày <em>${Math.round(s.w)}</em>`; },
     icon(g, r) {
       const grd = g.createLinearGradient(-r * .7, 0, r * .7, 0);
@@ -258,7 +258,7 @@ const WEAPONS = {
       if (!tgt) return false;
       if (w.evolved) {
         // LĂNG KÍNH — tia nảy 6 lần, mỗi lần một màu cầu vồng
-        G.prismBeam(tgt, 6 + Math.floor(G.stats.proj / 2), s.dmg * .67 * G.stats.damage, s.w * 1.15 * G.stats.area);
+        G.prismBeam(tgt, 4 + Math.floor(G.stats.proj / 3), s.dmg * .59 * G.stats.damage, s.w * 1.15 * G.stats.area);
         Sfx.shoot('laser');
         return true;
       }
@@ -276,7 +276,7 @@ const WEAPONS = {
     evoName: 'BÃO TUYẾT VĨNH CỬU',
     evoDesc: 'Không còn từng đợt — một <em>cơn bão tuyết bám theo bạn</em> suốt màn chơi, liên tục làm chậm và gặm sát thương.',
     tip: 'Sóng băng lan ra, gây sát thương và làm chậm.',
-    stat: lv => ({ dmg: 12 + lv * 5.5, cd: 2.4 - lv * .13, r: 130 + lv * 16, slow: .35 + lv * .04, dur: 1.6 + lv * .1 }),
+    stat: lv => ({ dmg: 15.6 + lv * 1.9, cd: 2.4 - lv * .13, r: 130 + lv * 16, slow: .35 + lv * .04, dur: 1.6 + lv * .1 }),
     desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg)}</em> sát thương · làm chậm <em>${Math.round(s.slow * 100)}%</em>`; },
     icon(g, r) {
       g.strokeStyle = '#6fe6ff'; g.lineWidth = 2.6; g.lineCap = 'round';
@@ -298,13 +298,13 @@ const WEAPONS = {
         if (!w.blizzard || w.blizzard.life <= 0) {
           w.blizzard = G.addZone({
             x: p.x, y: p.y, r: s.r * .78 * G.stats.area, life: 999,
-            dps: s.dmg * 1.6 * G.stats.damage, color: '#aef3ff',
+            dps: s.dmg * 1.10 * G.stats.damage, color: '#aef3ff',
             slow: .5, follow: true, fx: 12
           });
           UI.announce('BÃO TUYẾT', '#aef3ff');
         }
         w.blizzard.r = s.r * .78 * G.stats.area;
-        w.blizzard.dps = s.dmg * 1.6 * G.stats.damage;
+        w.blizzard.dps = s.dmg * 1.10 * G.stats.damage;
         // thỉnh thoảng phóng băng đâm ra ngoài
         for (let i = 0; i < 1; i++) {
           const a = rand(TAU);
@@ -325,11 +325,11 @@ const WEAPONS = {
 
   /* ---------- 8. HOMING MISSILES ---------- */
   missile: {
-    name: 'TÊN LỬA TẦM NHIỆT', color: '#ff2e88', max: 8, pairId: 'proj', evoCd: 1.25,
+    name: 'TÊN LỬA TẦM NHIỆT', color: '#ff2e88', max: 8, pairId: 'proj', evoCd: 2.1,
     evoName: 'HOẢ TIỄN OANH TẠC',
-    evoDesc: 'Phóng <em>loạt 14 quả</em> bay vòng cung lên trời rồi <em>rơi rải khắp màn hình</em>, mỗi quả nổ diện rộng.',
+    evoDesc: 'Phóng <em>loạt 4 quả</em> bay vòng cung lên trời rồi <em>rơi rải khắp màn hình</em>, mỗi quả nổ diện rộng.',
     tip: 'Tên lửa tự truy đuổi kẻ địch.',
-    stat: lv => ({ dmg: 22 + lv * 8.5, cd: 1.5 - lv * .08, n: 1 + Math.floor(lv / 2), turn: 4.5 }),
+    stat: lv => ({ dmg: 27.79 + lv * 2.71, cd: 1.5 - lv * .08, n: 1 + Math.floor(lv / 2), turn: 4.5 }),
     desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> tên lửa × <em>${Math.round(s.dmg)}</em> sát thương`; },
     icon(g, r) {
       g.save(); g.rotate(-.6);
@@ -348,7 +348,7 @@ const WEAPONS = {
       if (w.evolved) {
         // HOẢ TIỄN OANH TẠC — loạt 14 quả bay vòng cung rồi rơi khắp màn hình
         const A = G.stats.area;
-        const total = 8 + G.stats.proj;
+        const total = 4 + Math.floor(G.stats.proj / 2);
         for (let i = 0; i < total; i++) {
           const tgt = G.randomEnemyNear(p.x, p.y, 700);
           const a = tgt ? angleTo(p.x, p.y, tgt.x, tgt.y) + rand(-.25, .25) : rand(TAU);
@@ -356,9 +356,9 @@ const WEAPONS = {
           G.spawnBullet({
             x: p.x, y: p.y, a, spd: 400, dmg: 0,
             sprite: 'b_missile', color: '#ff2e88', r: 11 * A,
-            life: d / 400, scale: A, spin: 4, lob: true, delay: i * .045,
+            life: d / 400, scale: A, spin: 4, lob: true, delay: i * .07,
             trail: '#ff88bb',
-            aoe: { r: 84 * A, dmg: s.dmg * .25 * G.stats.damage, color: '#ff2e88' }
+            aoe: { r: 84 * A, dmg: s.dmg * .33 * G.stats.damage, color: '#ff2e88' }
           });
         }
         Sfx.shoot('missile');
@@ -386,7 +386,7 @@ const WEAPONS = {
     evoName: 'LÒ PHẢN ỨNG',
     evoDesc: 'Hào quang <em>tự nở to theo số kẻ địch đứng bên trong</em>, và cứ mỗi nhịp lại <em>phóng tia điện tới tất cả</em> chúng.',
     tip: 'Vùng năng lượng quanh bạn liên tục gây sát thương.',
-    stat: lv => ({ dmg: 9 + lv * 3.8, cd: .5, r: 92 + lv * 11 }),
+    stat: lv => ({ dmg: 11.53 + lv * 1.27, cd: .5, r: 92 + lv * 11 }),
     desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg * 2)}</em> sát thương/giây · bán kính <em>${Math.round(s.r)}</em>`; },
     icon(g, r) {
       g.strokeStyle = '#b6ff3a'; g.lineWidth = 2.4;
@@ -405,11 +405,11 @@ const WEAPONS = {
         const inside = G.enemiesInRadius(p.x, p.y, R * 1.1).length;
         // nở tối đa ~1.46 lần (trước là 2.28) — vùng sát thương tính theo BÌNH PHƯƠNG
         // bán kính, nên nới rộng thêm chút là mạnh lên rất nhiều
-        w.reactor = lerp(w.reactor || 1, 1.05 + Math.min(inside, 18) * .008, .25);
+        w.reactor = lerp(w.reactor || 1, 1.05 + Math.min(inside, 18) * .006, .25);
         R *= w.reactor;
         const hits = G.enemiesInRadius(p.x, p.y, R);
         for (const e of hits) {
-          G.damageEnemy(e, s.dmg * 1.6 * G.stats.damage, { silent: true, sigil: true });
+          G.damageEnemy(e, s.dmg * 1.5 * G.stats.damage, { silent: true, sigil: true });
           if (Math.random() < .2)
             G.arcs.push({
               x1: p.x, y1: p.y, x2: e.x, y2: e.y,
@@ -430,11 +430,11 @@ const WEAPONS = {
 
   /* ---------- 10. BOOMERANG ---------- */
   boomerang: {
-    name: 'PHI TIÊU HỒI', color: '#eafcff', max: 8, pairId: 'crit', evoCd: .9,
+    name: 'PHI TIÊU HỒI', color: '#eafcff', max: 8, pairId: 'crit', evoCd: 1.25,
     evoName: 'LƯỠI HÁI TỬ THẦN',
     evoDesc: 'Phi tiêu <em>bay mãi không quay về</em>, và <em>mỗi lần chém trúng lại to thêm và mạnh thêm</em> — càng đông càng khủng khiếp.',
     tip: 'Phi tiêu bay đi rồi quay về, xuyên nhiều kẻ địch.',
-    stat: lv => ({ dmg: 16 + lv * 6.5, cd: 1.25 - lv * .06, n: 1 + Math.floor(lv / 3), range: 300 + lv * 16 }),
+    stat: lv => ({ dmg: 20.37 + lv * 2.13, cd: 1.25 - lv * .06, n: 1 + Math.floor(lv / 3), range: 300 + lv * 16 }),
     desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> phi tiêu × <em>${Math.round(s.dmg)}</em> · xuyên thấu`; },
     icon(g, r) {
       g.fillStyle = '#eafcff'; g.strokeStyle = '#8ad8ff'; g.lineWidth = 1.6;
@@ -445,18 +445,18 @@ const WEAPONS = {
       const s = this.stat(w.lv);
       const tgt = G.nearestEnemy(p.x, p.y, 800);
       const base = tgt ? angleTo(p.x, p.y, tgt.x, tgt.y) : rand(TAU);
-      const n = s.n + G.stats.proj + (w.evolved ? 1 : 0);
+      const n = s.n + G.stats.proj;
       for (let i = 0; i < n; i++) {
         const a = base + (n > 1 ? (i - (n - 1) / 2) * .5 : 0);
         G.spawnBullet({
-          x: p.x, y: p.y, a, spd: 620, dmg: s.dmg * (w.evolved ? 1.03 : 1) * G.stats.damage,
+          x: p.x, y: p.y, a, spd: 620, dmg: s.dmg * (w.evolved ? 1.05 : 1) * G.stats.damage,
           sprite: 'b_blade', color: '#eafcff', r: 17 * G.stats.area,
           life: w.evolved ? 8 : 3, pierce: 999, spin: 17, boomerang: true,
           // tiến hoá: bay vòng NGẮN hơn để luôn quẩn trong đám đông thay vì lượn ra xa
           range: s.range * G.stats.area * (w.evolved ? .5 : 1), scale: G.stats.area,
-          hitCd: w.evolved ? .18 : .35, owner: p, noReturn: w.evolved,
-          // LƯỠI HÁI: mỗi lần chém trúng lại to & mạnh thêm 5%, tối đa 8 lần
-          grow: w.evolved ? .11 : 0, growCap: 8
+          hitCd: w.evolved ? .32 : .35, owner: p, noReturn: w.evolved,
+          // LƯỠI HÁI: mỗi lần chém trúng lại to & mạnh thêm 4,5%, tối đa 6 lần
+          grow: w.evolved ? .045 : 0, growCap: 6
         });
       }
       Sfx.shoot('blade');

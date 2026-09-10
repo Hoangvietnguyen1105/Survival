@@ -23,6 +23,21 @@ const G = {
      ARENA_FULL là kích thước gốc để luật THU HẸP còn biết đường trả lại. */
   bossRule: null, eclipseT: 0,
   kills: 0, gold: 0, dmgDealt: 0,
+
+  /* ====== TRẦN HỒI MÁU — chỗ chữa bệnh "cuối game không thể thua" ======
+     Ba nguồn hồi máu đều tăng theo SÁT THƯƠNG GÂY RA hoặc SỐ MẠNG HẠ ĐƯỢC, mà hai thứ đó
+     cuối game lớn không giới hạn, còn máu tối đa thì cố định — nên người chơi thành bất tử:
+       · hút máu (HUYẾT ẤN, ẤN HUYẾT NGUYỆT tầng 1)
+       · ẤN HUYẾT NGUYỆT tầng 3: hồi 2 máu mỗi mạng  (~100 mạng/giây = 200 máu/giây!)
+       · tim rơi ra từ quái: 2,2% quái thường + 35% quái tinh anh  (~180 máu/giây ở màn 35)
+     Đo được trước khi có trần: màn 35, bot ăn 5085 sát thương trong 120 giây mà VẪN ĐẦY MÁU.
+     Nay cả ba rút chung một hũ, hũ đầy lại mỗi giây đúng
+        máu tối đa × (HEAL_BASE + hút máu × HEAL_LS).
+     HỒI MÁU MỖI GIÂY của BÙA HỒI SINH cố ý ĐỨNG NGOÀI trần — nó là con số cố định người
+     chơi đã trả giá để có, không phình theo sát thương. */
+  HEAL_BASE: .045,
+  HEAL_LS: 1.1,
+  healPool: 0,
   pendingLevels: 0,
   slowmo: 1, slowmoT: 0,
 
@@ -70,6 +85,7 @@ const G = {
     this.wave = 1; this.waveDur = 30; this.waveTime = this.waveDur;
     this.waveState = 'fight';
     this.kills = 0; this.gold = 0; this.dmgDealt = 0;
+    this.healPool = 0;
     this.time = 0; this.runTime = 0;
     this.pendingLevels = 0;
     this.bossActive = null;
@@ -127,6 +143,13 @@ const G = {
     this.time += sdt;
     this.runTime += sdt;
     this.dmgBudget = 9;
+
+    /* ---- hũ hồi máu, đầy lại theo thời gian (xem HEAL_BASE / HEAL_LS) ---- */
+    const healCap = this.player.maxHp * (G.HEAL_BASE + this.stats.lifesteal * G.HEAL_LS);
+    // Hũ chứa được cả một cục (30% máu tối đa) chứ không chỉ 1 giây hồi: nếu không thì
+    // đầu game hũ chỉ giữ ~4 máu, một trái tim 14 máu ăn vào chỉ được 4 -> tim thành vô dụng.
+    // Ở màn cao thì 30% máu tối đa là hạt cát, hũ cạn ngay và chỉ còn nhỏ giọt theo healCap.
+    this.healPool = Math.min(this.healPool + healCap * sdt, Math.max(healCap * 1.2, this.player.maxHp * .30));
 
     const p = this.player;
     updatePlayer(this, sdt);
@@ -294,7 +317,7 @@ const G = {
       const def = WEAPONS[w.id];
       if (w.id === 'blade') {
         const s = def.stat(w.lv);
-        p.bladeAng += s.rot * (w.evolved ? 1.15 : 1) * dt;
+        p.bladeAng += s.rot * (w.evolved ? 1.08 : 1) * dt;
         const rings = bladeRings(this, p);
         for (const ring of rings.list) {
           for (let i = 0; i < ring.n; i++) {
@@ -306,14 +329,14 @@ const G = {
               const rr = ring.hitR + e.r;
               if (dist2(bx, by, e.x, e.y) < rr * rr) {
                 e.bladeCd = .42;
-                this.damageEnemy(e, s.dmg * (w.evolved ? 1.6 : 1) * this.stats.damage, { knock: 210, ang: a });
+                this.damageEnemy(e, s.dmg * (w.evolved ? .82 : 1) * this.stats.damage, { knock: 210, ang: a });
                 Particles.burst(bx, by, 5, '#8ff6ff', { speed: 180, life: .25, size: 4 });
                 Sfx.shoot('blade');
                 // THIÊN LUÂN: mỗi nhát chém bắn ra một sóng xung kích nhỏ
                 if (w.evolved) {
                   Particles.ring(bx, by, 34 * this.stats.area, '#8ff6ff', .2, 2);
                   for (const o of this.enemiesInRadius(bx, by, 34 * this.stats.area))
-                    if (o !== e) this.damageEnemy(o, s.dmg * .18 * this.stats.damage, { silent: true, sigil: true });
+                    if (o !== e) this.damageEnemy(o, s.dmg * .10 * this.stats.damage, { silent: true, sigil: true });
                 }
               }
             }
@@ -476,7 +499,7 @@ const G = {
   thunderRain(n, dmg, zoneDps) {
     const p = this.player, A = this.stats.area;
     for (let i = 0; i < n; i++) {
-      this.after(i * .06, () => {
+      this.after(i * .10, () => {
         const tgt = this.randomEnemyNear(p.x, p.y, 640);
         const x = tgt ? tgt.x + rand(-40, 40) : p.x + rand(-420, 420);
         const y = tgt ? tgt.y + rand(-40, 40) : p.y + rand(-420, 420);
@@ -638,9 +661,11 @@ const G = {
 
     // KHÁT MÁU (luật của HUYẾT NHÃN): vô hiệu hoá hút máu suốt trận trùm
     if (this.stats.lifesteal > 0 && this.bossRule !== 'bloodthirst') {
-      const heal = dmg * this.stats.lifesteal;
       const p = this.player;
-      if (p.hp < p.maxHp) {
+      // Hút máu phải đi qua hũ có trần (G.HEAL_BASE / G.HEAL_LS), nếu không thì cuối game bất tử.
+      const heal = Math.min(dmg * this.stats.lifesteal, this.healPool);
+      if (heal > 0 && p.hp < p.maxHp) {
+        this.healPool -= heal;
         p.hp = Math.min(p.maxHp, p.hp + heal);
         if (Math.random() < .12) Particles.emit({ x: p.x, y: p.y - 10, vx: rand(-20, 20), vy: -50, life: .5, size: 4, color: '#ff2e88' });
       }
@@ -792,8 +817,11 @@ const G = {
         FloatText.add(o.x, o.y - 10, '+' + o.value, '#ffc93c', 14);
         break;
       case 'heart': {
-        const h = Math.min(o.value, p.maxHp - p.hp);
-        p.hp = Math.min(p.maxHp, p.hp + o.value);
+        // Tim cũng phải rút từ hũ có trần: số tim tỉ lệ số mạng hạ được, cuối game vô hạn.
+        const give = Math.min(o.value, this.healPool);
+        this.healPool -= give;
+        const h = Math.min(give, p.maxHp - p.hp);
+        p.hp = Math.min(p.maxHp, p.hp + give);
         Sfx.heal();
         FloatText.add(p.x, p.y - 28, '+' + Math.round(h), '#3affa0', 18);
         Particles.burst(p.x, p.y, 12, '#3affa0', { speed: 160, life: .5, size: 5 });
@@ -849,9 +877,13 @@ const G = {
 
     this.spawnT -= dt;
     if (this.spawnT <= 0) {
-      const interval = Math.max(.13, .70 - this.wave * .035);
+      // Sàn nhịp sinh và cỡ mỗi lượt được nới ở màn cao: từ màn ~16 trở đi nhịp cũ đã
+      // chạm sàn .13 nên độ khó ngừng tăng, quái chết trước khi kịp tới gần và ván đấu
+      // thành bất khả bại (đo được: bot đi từ màn 15 tới 36 không mất một giọt máu).
+      const interval = Math.max(.085, .70 - this.wave * .035);
       this.spawnT = interval;
-      const batch = 1 + Math.floor(this.wave / 3);
+      // tới màn 12 giữ đúng như cũ, sau đó mỗi 4 màn thêm 1 con mỗi lượt
+      const batch = 1 + Math.floor(this.wave / 3) + Math.max(0, Math.floor((this.wave - 12) / 4));
       const cap = Math.min(260, 60 + this.wave * 14);
       for (let i = 0; i < batch && this.enemies.count < cap; i++) this.spawnWaveEnemy();
     }
@@ -866,7 +898,8 @@ const G = {
     const avail = SPAWN_TABLE.filter(s => this.wave >= s.from);
     const chosen = wpick(avail);
     const pos = this.edgeSpawnPos();
-    const elite = Math.random() < Math.min(.16, .012 + this.wave * .008);
+    // giữ nguyên độ dốc cũ, chỉ nới TRẦN từ .16 lên .24 (trần cũ chạm ở màn 19 rồi đứng)
+    const elite = Math.random() < Math.min(.24, .012 + this.wave * .008);
     this.spawnEnemy(chosen.id, pos.x, pos.y, elite);
   },
 
@@ -893,7 +926,12 @@ const G = {
     const def = ENEMIES[id];
     if (!def) return null;
     const w = this.wave;
-    const hpMul = 1 + (w - 1) * .30 + Math.pow(w, 1.75) * .014;
+    // Máu quái: tới màn 10 GIỮ ĐÚNG NHƯ CŨ (số mũ 1.75), từ màn 11 số mũ dốc dần lên.
+    // Đây là chỗ chữa bệnh "về sau quái quá yếu, không thể thua": sức mạnh người chơi cộng
+    // dồn theo hàm mũ (6 vũ khí × 6 trang bị × 3 ấn ký) nên đường cong máu quái phải dốc
+    // theo, không thì cuối game thành đi bộ. Kết quả: màn 20 +12%, màn 35 +74%, màn 45 +165%.
+    const ex = w <= 10 ? 1.75 : 1.75 + (w - 10) * .012;
+    const hpMul = 1 + (w - 1) * .30 + Math.pow(w, ex) * .014;
     const dmgMul = 1 + (w - 1) * .11;
     const spdMul = Math.min(1.55, 1 + (w - 1) * .014);
     return this.enemies.spawn({

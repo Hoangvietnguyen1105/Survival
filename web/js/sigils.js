@@ -80,7 +80,10 @@ const SIGILS = {
     onKill(G, st, e) {
       if (st.lv < 3) return;
       const p = G.player;
-      if (p.hp < p.maxHp) p.hp = Math.min(p.maxHp, p.hp + 2);
+      // Phải rút từ hũ hồi máu có trần của G, nếu không thì cuối game hạ ~100 mạng/giây
+      // là hồi 200 máu/giây trên bể máu 210 -> bất tử. Xem G.HEAL_CAP.
+      const heal = Math.min(2, G.healPool);
+      if (heal > 0 && p.hp < p.maxHp) { G.healPool -= heal; p.hp = Math.min(p.maxHp, p.hp + heal); }
     },
     afterHit(G, st, e) {
       if (st.lv < 4 || e.dead || e.boss) return;
