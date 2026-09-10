@@ -1,16 +1,30 @@
-/* ================= NEON HORDE — UI ================= */
+/* ================= NEON KITCHEN — UI kiểu TRUYỆN TRANH =================
+   Bản gốc (`main`) là neon tối phát sáng. Nhánh này đổi hẳn: giấy kem, chữ mực,
+   viền mực dày, bóng đổ CỨNG (không blur), vân halftone. Bảng màu accent được
+   làm ĐẬM lại so với bản neon vì trên nền kem thì màu neon nhạt đọc không nổi.
+
+   Ba quy tắc, giữ đúng thì phần giao diện thêm sau vẫn cùng chất:
+     1. viền `3px solid var(--ink)` — mọi khối đều có viền mực
+     2. bóng `var(--sh)` = bóng đổ cứng, KHÔNG dùng blur/glow
+     3. không gradient, không `backdrop-filter`
+   ====================================================================== */
 :root{
-  --bg:#06070d;
-  --panel:rgba(10,13,24,.92);
-  --cyan:#25f4ee;
-  --mag:#ff2e88;
-  --lime:#b6ff3a;
-  --gold:#ffc93c;
-  --red:#ff3b52;
-  --violet:#9d6bff;
-  --txt:#dfe7ff;
-  --dim:#7b86a8;
-  --line:rgba(120,160,255,.18);
+  --bg:#4a3526;              /* sàn gỗ tối, khớp với ngoài đấu trường trong game */
+  --paper:#fff6e2;
+  --paper2:#f3e4c6;
+  --ink:#2a1d16;
+  --panel:#fff6e2;
+  --cyan:#137f96;
+  --mag:#d4246c;
+  --lime:#4f8d13;
+  --gold:#c97f0a;
+  --red:#c4232f;
+  --violet:#6b3fd4;
+  --txt:#2a1d16;
+  --dim:#8a6f55;
+  --line:#2a1d16;
+  --sh:4px 4px 0 var(--ink);
+  --sh-sm:3px 3px 0 var(--ink);
   --safe-t:env(safe-area-inset-top,0px);
   --safe-b:env(safe-area-inset-bottom,0px);
 }
@@ -325,3 +339,159 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;image
   .screen{gap:12px}
   .card{min-height:190px}
 }
+
+/* ============================================================================
+   ĐÈ PHONG CÁCH TRUYỆN TRANH
+   Khối này đặt CUỐI FILE và cố tình ĐÈ lên các luật neon phía trên (cùng độ ưu
+   tiên thì luật sau thắng). Làm vậy thay vì sửa rải rác 270 dòng ở trên để:
+     · dễ đọc — toàn bộ quyết định về phong cách nằm gọn một chỗ
+     · dễ lùi — xoá khối này là quay lại nguyên bản neon
+   ============================================================================ */
+
+/* ---------- nền: giấy kem + vân halftone ---------- */
+.screen{
+  background:
+    radial-gradient(circle at 1px 1px, rgba(42,29,22,.14) 1.1px, transparent 1.2px) 0 0/9px 9px,
+    var(--paper);
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+
+/* ---------- nút bấm ---------- */
+.btn{
+  font-weight:800;letter-spacing:.1em;
+  border:3px solid var(--ink);border-radius:12px;
+  background:var(--paper2);color:var(--ink);
+  box-shadow:var(--sh);
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink);border-color:var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.primary{background:var(--gold);color:var(--paper);text-shadow:none;border-color:var(--ink)}
+.btn.ghost{background:var(--paper);color:var(--ink);border-color:var(--ink)}
+.btn.ghost:hover{color:var(--ink);box-shadow:6px 6px 0 var(--ink)}
+.btn.danger{background:var(--red);color:var(--paper);border-color:var(--ink)}
+
+/* ---------- tiêu đề ---------- */
+.title{
+  background:none;-webkit-background-clip:initial;background-clip:initial;
+  -webkit-text-fill-color:var(--gold);color:var(--gold);
+  -webkit-text-stroke:5px var(--ink);paint-order:stroke fill;
+  filter:drop-shadow(5px 5px 0 var(--ink));animation:none;
+}
+.title::after{display:none}
+.subtitle{color:var(--ink);font-weight:700}
+.panel-title{color:var(--ink);text-shadow:none;-webkit-text-stroke:0}
+.panel-sub,.section-label{color:var(--dim)}
+
+/* ---------- chọn nhân vật ---------- */
+.char{border:3px solid var(--ink);border-radius:14px;background:var(--paper2);box-shadow:var(--sh-sm)}
+.char:hover{transform:translate(-2px,-2px);background:var(--paper);box-shadow:5px 5px 0 var(--ink)}
+.char.sel{border-color:var(--ink);background:var(--gold);box-shadow:5px 5px 0 var(--ink)}
+.char .cname{color:var(--ink)}
+.char .crole{color:var(--ink);opacity:.7}
+.char-desc{color:var(--ink)}
+.char-desc b{color:var(--lime)}
+.char-desc .wpn{color:var(--cyan)}
+.best-row{color:var(--dim)}
+.best-row b{color:var(--gold)}
+
+/* ---------- hướng dẫn ---------- */
+.how-item{background:var(--paper2);border:3px solid var(--ink);border-left-width:9px;
+  border-radius:4px 12px 12px 4px;box-shadow:var(--sh-sm)}
+.how-item b{color:var(--ink)}
+.how-item span{color:var(--dim)}
+
+/* ---------- thẻ nâng cấp ---------- */
+.card{
+  border:3px solid var(--ink);border-radius:16px;
+  background:var(--paper);box-shadow:var(--sh);
+}
+.card::before{display:none}
+.card:hover{transform:translate(-3px,-3px) scale(1.02);border-color:var(--ink);
+  box-shadow:8px 8px 0 var(--ink)}
+.card .ico{filter:none}
+.card .cn{color:var(--ink)}
+.card .cd{color:var(--dim)}
+.card .cd em{color:var(--red)}
+.card .tag{border:2.5px solid var(--ink);font-weight:800;background:var(--paper2)}
+.tag.new{color:var(--lime)}.tag.up{color:var(--cyan)}
+.tag.pas{color:var(--violet)}.tag.evo{color:var(--gold);background:var(--gold);color:var(--paper)}
+.tag.sig{color:var(--mag);border-style:dashed}
+.card .req{border-top:2.5px solid var(--ink);color:var(--dim)}
+.card .req b{color:var(--ink)}
+.card .lvdots i{background:var(--paper2);border:2px solid var(--ink);width:8px;height:8px}
+.card .lvdots i.on{background:var(--ink);box-shadow:none}
+.card.evolve{border-color:var(--gold);border-width:4px;animation:cardIn .3s backwards}
+
+/* ---------- bảng chỉ số & kết quả ---------- */
+.stat-panel div{background:var(--paper2);border:2.5px solid var(--ink);border-radius:8px}
+.stat-panel span{color:var(--dim)}
+.stat-panel b{color:var(--ink)}
+.result-grid div{background:var(--paper2);border:3px solid var(--ink);box-shadow:var(--sh-sm)}
+.result-grid span{color:var(--dim)}
+.result-grid b{color:var(--ink);text-shadow:none}
+.go-loadout canvas{border:2.5px solid var(--ink);background:var(--paper2)}
+
+/* ---------- HUD ---------- */
+.bar{border:3px solid var(--ink);border-radius:8px;background:var(--paper2);height:20px}
+.bar.hp .fill{background:var(--red);box-shadow:none}
+.bar.xp{height:13px}
+.bar.xp .fill{background:var(--cyan);box-shadow:none}
+.bar span{color:var(--paper);text-shadow:1.5px 1.5px 0 var(--ink),-1.5px -1.5px 0 var(--ink),
+  1.5px -1.5px 0 var(--ink),-1.5px 1.5px 0 var(--ink);font-weight:800}
+.wave-label{color:var(--paper);text-shadow:2px 2px 0 var(--ink)}
+.wave-label b{color:var(--gold)}
+.wave-timer{color:var(--paper);text-shadow:2.5px 2.5px 0 var(--ink),-2.5px -2.5px 0 var(--ink),
+  2.5px -2.5px 0 var(--ink),-2.5px 2.5px 0 var(--ink)}
+.wave-timer.urgent{color:#ff6b6b;text-shadow:2.5px 2.5px 0 var(--ink),-2.5px -2.5px 0 var(--ink),
+  2.5px -2.5px 0 var(--ink),-2.5px 2.5px 0 var(--ink)}
+.stats-mini{color:var(--paper)}
+.stats-mini div{text-shadow:2px 2px 0 var(--ink)}
+.ic-coin{box-shadow:none;border:2px solid var(--ink)}
+.ic-skull{background:var(--paper);border:0}
+
+.slot{background:var(--paper);border:3px solid var(--ink);border-radius:10px}
+.slots.small .slot{border-width:2.5px;border-radius:8px}
+.slot .lv{background:var(--ink);border:2px solid var(--ink);color:var(--paper);font-weight:800}
+.slot.max .lv{background:var(--gold);color:var(--ink);border-color:var(--ink)}
+.slot.sigil{border-color:var(--mag)}
+.slot.sigil.ready{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold);animation:none}
+
+.icon-btn{border:3px solid var(--ink);background:var(--paper2);color:var(--ink);
+  font-weight:900;box-shadow:var(--sh-sm)}
+.icon-btn:active{transform:translate(2px,2px);box-shadow:none}
+#dbgBtn{border-color:var(--ink);color:var(--ink);background:var(--gold)}
+
+/* ---------- thanh máu trùm & thông báo ---------- */
+#bossBarWrap .boss-bar,.boss-bar{border:3px solid var(--ink);background:var(--paper2)}
+.boss-name{color:var(--paper);text-shadow:2.5px 2.5px 0 var(--ink)}
+.boss-rule{background:var(--paper);border:3px solid var(--ink);box-shadow:var(--sh-sm)}
+#announce{color:var(--paper);text-shadow:3px 3px 0 var(--ink),-3px -3px 0 var(--ink),
+  3px -3px 0 var(--ink),-3px 3px 0 var(--ink)}
+
+/* ---------- cần điều khiển ảo ---------- */
+#stickBase,#stickKnob,#dashBtn{border:3px solid var(--ink)!important;box-shadow:none!important}
+#dashBtn{background:var(--gold);color:var(--ink);font-weight:900}
+
+/* ---------- bảng debug ---------- */
+#dbgMeter{background:var(--paper);border:3px solid var(--ink);color:var(--ink)}
+#dbgMeter b{color:var(--ink)}
+#dbgMeter span{color:var(--dim)}
+.dbg-panel{background:var(--paper);border:3px solid var(--ink);box-shadow:0 10px 0 var(--ink)}
+.dbg-head,.dbg-now{border-bottom:3px solid var(--ink)}
+.dbg-now{background:var(--paper2);color:var(--dim)}
+.dbg-now b{color:var(--ink)}
+.dbg-now em{color:var(--red)}
+.dbg-sec{color:var(--ink);border-bottom:2.5px solid var(--ink)}
+.dbg-lbl,.dbg-row small,.dbg-hint{color:var(--dim)}
+.dbg-wpn,.dbg-num,.dbg-btn,.dbg-toggle{background:var(--paper2);border:2.5px solid var(--ink);
+  color:var(--ink);font-weight:700}
+.dbg-wpn:hover,.dbg-num:hover,.dbg-btn:hover,.dbg-toggle:hover{background:var(--paper)}
+.dbg-wpn.sel{background:var(--gold);border-color:var(--ink);box-shadow:none}
+.dbg-num.sel{background:var(--cyan);color:var(--paper);border-color:var(--ink)}
+.dbg-num.last{border-color:var(--gold);color:var(--gold)}
+.dbg-btn.primary{background:var(--gold);color:var(--paper)}
+.dbg-toggle{color:var(--dim)}
+.dbg-toggle.on{background:var(--lime);color:var(--paper);border-color:var(--ink)}
+
+/* ---------- lớp phủ khi trúng đòn ---------- */
+.hurt-vig{box-shadow:inset 0 0 90px 30px rgba(196,35,47,.55)!important}

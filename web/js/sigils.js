@@ -25,18 +25,20 @@ const SIGILS = {
       'Cứ <em>4</em> đòn · lan <em>12</em> mục tiêu · sét chuyển <em>trắng–vàng</em> và <em>MẠNH DẦN +18%</em> sau mỗi lần nảy'
     ][lv - 1],
     icon(g, r) {                                  // cửa lò vi sóng + tia điện
-      g.strokeStyle = '#9d6bff'; g.lineWidth = 2.4;
-      g.beginPath(); g.rect(-r * .78, -r * .58, r * 1.56, r * 1.16);
-      g.fillStyle = 'rgba(157,107,255,.16)'; g.fill(); g.stroke();
-      g.strokeStyle = 'rgba(217,196,255,.55)'; g.lineWidth = 1.4;
-      for (let i = -1; i <= 2; i++) {               // lưới cửa lò
-        g.beginPath(); g.moveTo(i * r * .3, -r * .58); g.lineTo(i * r * .3, r * .58); g.stroke();
+      g.beginPath(); g.rect(-r * .8, -r * .6, r * 1.6, r * 1.2);
+      toon(g, '#8b7fb0', r * .11);
+      g.beginPath(); g.rect(-r * .66, -r * .46, r * 1.06, r * .92);
+      toon(g, '#6b3fd4', r * .08);                  // cửa kính
+      g.strokeStyle = INK; g.lineWidth = r * .05;
+      for (let i = -1; i <= 1; i++) {               // lưới cửa lò
+        g.beginPath(); g.moveTo(i * r * .28 - r * .12, -r * .46); g.lineTo(i * r * .28 - r * .12, r * .46); g.stroke();
       }
-      g.fillStyle = '#ffe23c';                      // tia điện
-      g.beginPath();
-      g.moveTo(r * .1, -r * .5); g.lineTo(-r * .3, r * .02); g.lineTo(0, r * .02);
-      g.lineTo(-r * .14, r * .5); g.lineTo(r * .3, -r * .08); g.lineTo(r * .02, -r * .08);
-      g.closePath(); g.fill();
+      g.beginPath(); g.rect(r * .48, -r * .34, r * .24, r * .68);
+      toon(g, '#c9ccd4', r * .07);                  // bảng nút
+      g.beginPath();                                // tia điện
+      g.moveTo(r * .06, -r * .42); g.lineTo(-r * .34, r * .04); g.lineTo(-r * .06, r * .04);
+      g.lineTo(-r * .2, r * .46); g.lineTo(r * .26, -r * .08); g.lineTo(-r * .02, -r * .08);
+      g.closePath(); toon(g, '#ffd23f', r * .08);
     },
     /* Hàng rào thời gian của onHit — xem chú thích ngay dưới. */
     tick(G, st, dt) { if (st.cd > 0) st.cd -= dt; },
@@ -78,19 +80,17 @@ const SIGILS = {
       '<em>HÀNH QUYẾT</em> tức thì mọi kẻ địch dưới <em>25%</em> máu — mỗi xác nổ thành <em>sóng máu</em> lan sang xung quanh'
     ][lv - 1],
     icon(g, r) {                                  // cái thớt gỗ + dao phay cắm xuống
-      g.beginPath(); g.rect(-r * .74, -r * .3, r * 1.48, r * .9);
-      g.fillStyle = 'rgba(120,72,40,.85)'; g.fill();
-      g.strokeStyle = '#ff2e88'; g.lineWidth = 2.4; g.stroke();
-      g.strokeStyle = 'rgba(255,208,230,.4)'; g.lineWidth = 1.4;
+      g.beginPath(); g.rect(-r * .76, -r * .28, r * 1.52, r * .9);
+      toon(g, '#c98b3a', r * .11);
+      g.strokeStyle = INK; g.lineWidth = r * .05;
       for (let i = -1; i <= 1; i++) {               // thớ gỗ
-        g.beginPath(); g.moveTo(-r * .7, i * r * .22 + r * .16); g.lineTo(r * .7, i * r * .22 + r * .16); g.stroke();
+        g.beginPath(); g.moveTo(-r * .7, i * r * .22 + r * .18); g.lineTo(r * .7, i * r * .22 + r * .18); g.stroke();
       }
       g.save(); g.rotate(.38);                      // lưỡi dao
-      g.beginPath(); g.rect(-r * .3, -r * .78, r * .62, r * .5);
-      g.fillStyle = '#ffe0ee'; g.fill();
-      g.strokeStyle = '#ff2e88'; g.lineWidth = 2; g.stroke();
-      g.fillStyle = '#3a2a12';                      // cán dao
-      g.fillRect(r * .3, -r * .68, r * .34, r * .18);
+      g.beginPath(); g.rect(-r * .32, -r * .8, r * .66, r * .52);
+      toon(g, '#e7edf5', r * .1);
+      g.beginPath(); g.rect(r * .32, -r * .72, r * .36, r * .2);
+      toon(g, '#8d5a3c', r * .09);                  // cán dao
       g.restore();
     },
     dmgMul(G, st, e) {
@@ -125,19 +125,29 @@ const SIGILS = {
       'Cứ <em>11 giây</em> <em>ĐÓNG BĂNG TOÀN MÀN HÌNH</em> 2 giây — xác đóng băng <em>vỡ tan</em> thành mảnh băng xuyên thấu'
     ][lv - 1],
     icon(g, r) {                                  // cánh tủ đông + bông tuyết
-      g.beginPath(); g.rect(-r * .6, -r * .8, r * 1.2, r * 1.6);
-      g.fillStyle = 'rgba(111,230,255,.16)'; g.fill();
-      g.strokeStyle = '#6fe6ff'; g.lineWidth = 2.4; g.stroke();
-      g.beginPath(); g.moveTo(-r * .6, -r * .12); g.lineTo(r * .6, -r * .12); g.stroke();
-      g.strokeStyle = '#d6f6ff'; g.lineWidth = r * .1; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(r * .4, -r * .56); g.lineTo(r * .4, -r * .3); g.stroke();
-      g.beginPath(); g.moveTo(r * .4, r * .16); g.lineTo(r * .4, r * .5); g.stroke();
-      g.strokeStyle = '#eafcff'; g.lineWidth = 2.2;  // bông tuyết trong tủ
+      g.beginPath(); g.rect(-r * .62, -r * .82, r * 1.24, r * 1.64);
+      toon(g, '#c9ccd4', r * .11);
+      g.beginPath(); g.rect(-r * .48, -r * .68, r * .96, r * .48);
+      toon(g, '#8fe3f5', r * .08);                  // ngăn đá
+      g.beginPath(); g.rect(-r * .48, -r * .04, r * .96, r * .72);
+      toon(g, '#8fe3f5', r * .08);                  // ngăn mát
+      g.strokeStyle = INK; g.lineWidth = r * .12; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(r * .3, -r * .58); g.lineTo(r * .3, -r * .32); g.stroke();
+      g.beginPath(); g.moveTo(r * .3, r * .1); g.lineTo(r * .3, r * .42); g.stroke();
+      g.strokeStyle = INK; g.lineWidth = r * .1;     // bông tuyết
       for (let i = 0; i < 3; i++) {
         const a = i / 3 * Math.PI;
         g.beginPath();
-        g.moveTo(-r * .22 - Math.cos(a) * r * .26, r * .36 - Math.sin(a) * r * .26);
-        g.lineTo(-r * .22 + Math.cos(a) * r * .26, r * .36 + Math.sin(a) * r * .26);
+        g.moveTo(-r * .16 - Math.cos(a) * r * .2, r * .3 - Math.sin(a) * r * .2);
+        g.lineTo(-r * .16 + Math.cos(a) * r * .2, r * .3 + Math.sin(a) * r * .2);
+        g.stroke();
+      }
+      g.strokeStyle = '#fff6e2'; g.lineWidth = r * .05;
+      for (let i = 0; i < 3; i++) {
+        const a = i / 3 * Math.PI;
+        g.beginPath();
+        g.moveTo(-r * .16 - Math.cos(a) * r * .2, r * .3 - Math.sin(a) * r * .2);
+        g.lineTo(-r * .16 + Math.cos(a) * r * .2, r * .3 + Math.sin(a) * r * .2);
         g.stroke();
       }
     },
@@ -176,19 +186,21 @@ const SIGILS = {
       'Lỗ đen <em>nghiền</em> kẻ địch bên trong',
       '<em>HỐ ĐEN KHỔNG LỒ</em> nuốt cả màn hình, khi tan thì <em>NỔ SIÊU TÂN TINH</em> và hút sạch ngọc toàn bản đồ'
     ][lv - 1],
-    icon(g, r) {                                  // cối xay: xoáy hút + lưỡi dao
-      const grd = g.createRadialGradient(0, 0, r * .1, 0, 0, r * .8);
-      grd.addColorStop(0, '#000'); grd.addColorStop(.55, '#2a0a44'); grd.addColorStop(1, 'rgba(193,77,255,0)');
-      g.fillStyle = grd; g.beginPath(); g.arc(0, 0, r * .8, 0, TAU); g.fill();
-      g.strokeStyle = '#c14dff'; g.lineWidth = 2.6;   // thành cối
-      g.beginPath(); g.moveTo(-r * .6, -r * .78); g.lineTo(-r * .44, r * .7);
-      g.lineTo(r * .44, r * .7); g.lineTo(r * .6, -r * .78); g.stroke();
-      g.beginPath(); g.ellipse(0, -r * .78, r * .6, r * .18, 0, 0, TAU); g.stroke();
-      g.fillStyle = '#e9c6ff';                        // 4 lưỡi dao xay
-      for (let i = 0; i < 4; i++) {
+    icon(g, r) {                                  // cối xay: thân cối + lưỡi dao
+      g.beginPath();
+      g.moveTo(-r * .56, -r * .7); g.lineTo(-r * .42, r * .7);
+      g.lineTo(r * .42, r * .7); g.lineTo(r * .56, -r * .7);
+      g.closePath(); toon(g, '#c9b8f5', r * .11);
+      g.beginPath();
+      g.moveTo(-r * .48, -r * .22); g.lineTo(-r * .36, r * .6);
+      g.lineTo(r * .36, r * .6); g.lineTo(r * .48, -r * .22);
+      g.closePath(); toon(g, '#a445e8', r * .08);     // sinh tố
+      g.beginPath(); g.ellipse(0, -r * .7, r * .56, r * .17, 0, 0, TAU);
+      toon(g, '#e6dcff', r * .1);                     // miệng cối
+      for (let i = 0; i < 4; i++) {                   // lưỡi dao xay
         g.save(); g.rotate(i / 4 * TAU + .4);
-        g.beginPath(); g.moveTo(0, r * .2); g.lineTo(r * .4, r * .12); g.lineTo(r * .4, r * .28);
-        g.closePath(); g.fill();
+        g.beginPath(); g.moveTo(0, r * .28); g.lineTo(r * .34, r * .18); g.lineTo(r * .34, r * .38);
+        g.closePath(); toon(g, '#e7edf5', r * .06);
         g.restore();
       }
     },
@@ -222,22 +234,20 @@ const SIGILS = {
       '<em>TÁI SINH</em>: lần đầu gục ngã sẽ sống lại với <em>60%</em> máu, <em>thiêu rụi</em> toàn màn hình và bất tử <em>3 giây</em>'
     ][lv - 1],
     icon(g, r) {                                  // ổ bánh nở bung trong lửa
-      g.strokeStyle = '#ff8a3c'; g.lineWidth = 2.6; g.lineCap = 'round';
       for (let i = -1; i <= 1; i++) {               // ngọn lửa dưới đáy
         g.beginPath();
-        g.moveTo(i * r * .34, r * .74);
-        g.quadraticCurveTo(i * r * .34 + r * .2, r * .3, i * r * .34, r * .04);
-        g.stroke();
+        g.moveTo(i * r * .34 - r * .12, r * .76);
+        g.quadraticCurveTo(i * r * .34 + r * .22, r * .34, i * r * .34, r * .02);
+        g.quadraticCurveTo(i * r * .34 - r * .2, r * .34, i * r * .34 - r * .12, r * .76);
+        g.closePath(); toon(g, '#ff8a3c', r * .08);
       }
       g.beginPath();                                // ổ bánh phồng
-      g.moveTo(-r * .62, r * .1);
-      g.bezierCurveTo(-r * .62, -r * .78, r * .62, -r * .78, r * .62, r * .1);
-      g.closePath();
-      g.fillStyle = '#e8a05c'; g.fill();
-      g.strokeStyle = '#ffd9a8'; g.lineWidth = 2.2; g.stroke();
-      g.strokeStyle = '#fff2c4'; g.lineWidth = 2.4;  // vết nứt vỏ bánh
-      g.beginPath(); g.moveTo(-r * .26, -r * .24); g.lineTo(r * .04, -r * .5); g.stroke();
-      g.beginPath(); g.moveTo(r * .1, -r * .2); g.lineTo(r * .38, -r * .42); g.stroke();
+      g.moveTo(-r * .64, r * .16);
+      g.bezierCurveTo(-r * .64, -r * .8, r * .64, -r * .8, r * .64, r * .16);
+      g.closePath(); toon(g, '#e0a352', r * .12);
+      g.strokeStyle = INK; g.lineWidth = r * .09; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(-r * .28, -r * .2); g.lineTo(r * .02, -r * .5); g.stroke();
+      g.beginPath(); g.moveTo(r * .1, -r * .16); g.lineTo(r * .4, -r * .4); g.stroke();
     },
     tick(G, st, dt) {
       const p = G.player;
@@ -547,7 +557,7 @@ const Sigils = {
     for (const f of this.flames) {
       const t = clamp(f.life / 3, 0, 1);
       g.save();
-      g.globalCompositeOperation = 'lighter';
+      g.globalCompositeOperation = 'source-over';
       const grd = g.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r);
       grd.addColorStop(0, `rgba(255,180,60,${.34 * t})`);
       grd.addColorStop(1, 'rgba(255,60,20,0)');
@@ -570,7 +580,7 @@ const Sigils = {
       g.fillStyle = grd;
       g.beginPath(); g.arc(h.x, h.y, R, 0, TAU); g.fill();
 
-      g.globalCompositeOperation = 'lighter';
+      g.globalCompositeOperation = 'source-over';
       g.strokeStyle = `rgba(193,77,255,${.75 * t})`;
       g.lineWidth = 3;
       for (let i = 0; i < 3; i++) {
@@ -591,7 +601,7 @@ const Sigils = {
     }
     if (this.flashT > 0) {
       g.save();
-      g.globalCompositeOperation = 'lighter';
+      g.globalCompositeOperation = 'source-over';
       g.fillStyle = `rgba(255,20,80,${this.flashT * .9})`;
       g.fillRect(0, 0, G.W, G.H);
       g.restore();

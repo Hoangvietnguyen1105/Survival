@@ -8,26 +8,70 @@
 
 ## ⚠️ ĐANG Ở NHÁNH `theme-dau-bep` — KHÔNG PHẢI `main`
 
-Nhánh này **chỉ đổi ART VÀ TÊN**, hoá thân thành **chuột đầu bếp đánh nhau với thức ăn**.
+Nhánh này **chỉ đổi ART VÀ TÊN**, hoá thân thành **chuột đầu bếp đánh nhau với thức ăn**,
+và đổi hẳn **PHONG CÁCH VẼ** từ neon arcade sang **TRUYỆN TRANH**.
 **Toàn bộ số liệu cân bằng giống hệt `main`**, không chệch một con số nào — mục 4B, 4C,
 4D, 5, 5B, 5C, 5D vẫn đúng nguyên văn, chỉ cần đọc tên mới theo bảng tra dưới đây.
 
 > Tên nhánh git không nhận dấu cách và dấu tiếng Việt, nên nhánh tên `theme-dau-bep`
 > chứ không phải "theme đầu bếp".
 
+## 🎨 PHONG CÁCH VẼ: TRUYỆN TRANH (đọc trước khi vẽ thêm bất cứ gì)
+
+Bản gốc trên `main` là **neon arcade**: hình khối hình học, nền tối, viền phát sáng,
+`shadowBlur` ở mọi nét, hạt vẽ chế độ cộng sáng. Nhánh này đổi hẳn.
+
+**BA QUY TẮC — giữ đúng thì hình vẽ thêm sau vẫn cùng chất:**
+1. **MÀU BẸT.** Không gradient, không quầng sáng, không `shadowBlur`.
+2. **VIỀN MỰC DÀY** (`INK = '#2a1d16'`) bao quanh mọi khối. Đây là thứ tạo cảm giác truyện tranh.
+3. **MẶT MŨI** cho mọi thứ còn sống: mắt (`eyes()`), miệng (`mouth()`), vệt sáng (`shine()`).
+
+**Bộ hàm dùng chung, nằm đầu `gfx.js`:**
+
+| Hàm | Việc |
+|---|---|
+| `toon(g, màu, độDàyViền)` | Hàm dùng nhiều nhất: tô bẹt rồi viền mực. Thay cho `neon()` cũ. |
+| `ink(g, độDày)` | Chỉ viền, không tô |
+| `shine(g, cx, cy, R, alpha)` | Vệt sáng bẹt trên-trái của một khối tròn |
+| `eyes(g, y, dx, r, angry)` | Mắt hoạt hoạ: tròng trắng + con ngươi + đốm sáng, `angry` thêm hàng mày |
+| `mouth(g, y, w, kiểu)` | `'smile'` / `'angry'` / `'o'` / `'flat'` |
+| `ratChef(g, r, o)` | Cả 5 nhân vật, xem chú thích riêng trong file về THỨ TỰ VẼ |
+| `neon(g, màu, lw)` | Giữ tên cũ để tương thích, nay gọi thẳng `toon()` |
+
+**`bake()` cố tình vẫn nhận 4 tham số** `(size, fn, glow, glowColor)` như bản cũ nhưng
+**bỏ qua hai tham số quầng sáng**, nhờ vậy các hàm biểu tượng gọi `bake(72, fn, 14, color)`
+không phải sửa chữ ký.
+
+### ⚠️ Ba cái bẫy của việc đổi sang nền SÁNG
+
+1. **`shadowBlur` của `bake()` nhuộm màu trắng theo màu quầng sáng.** Mũ đầu bếp tô trắng
+   mà còn quầng sáng thì nhìn ra một cục mờ. Nay `bake()` không còn quầng sáng nên hết bẫy,
+   nhưng nếu ai bật lại thì phải `g.save(); g.shadowBlur = 0; ...; g.restore()`.
+2. **Chế độ cộng sáng `'lighter'` làm nền kem TRẮNG XOÁ.** Đã đổi hết 10 chỗ trong `game.js`
+   và 3 chỗ trong `sigils.js` sang `'source-over'`, và đổi cách vẽ hạt trong `gfx.js`.
+   Thêm hiệu ứng mới thì **đừng dùng `'lighter'`** trên nhánh này.
+3. **Hạt nhỏ mà viền mực hết thì vệt đạn thành sợi dây đặc.** `Particles.draw` chỉ viền
+   những hạt bán kính > 3.2.
+
 ### Đã đổi những gì
 | File | Đổi gì |
 |---|---|
-| `web/js/gfx.js` | **Toàn bộ ~40 sprite**: 5 nhân vật, 8 quái, 8 trùm, 9 đạn, 8 vật phẩm. Thêm hàm dùng chung `ratChef()`. |
+| `web/js/gfx.js` | **Tầng vẽ mới** (`INK`, `toon`, `ink`, `shine`, `eyes`, `mouth`, `ratChef`) · `bake()` bỏ quầng sáng · **toàn bộ ~40 sprite** · `Particles.draw` vẽ bẹt · `FloatText` viền mực dày |
+| `web/js/game.js` | `drawBackground()` → **sàn bếp gạch men kem** + vạch cảnh báo vàng đen ở mép sân, ngoài sân là sàn gỗ tối · 10 chỗ `'lighter'` → `'source-over'` |
 | `web/js/data.js` | Tên + mô tả 5 nhân vật · tên + `tip` + `evoName` + `evoDesc` + **biểu tượng** 10 vũ khí · tên + **biểu tượng** 14 trang bị · tên 8 trùm + 8 luật đấu trường |
-| `web/js/sigils.js` | Ấn Ký → **BÍ KÍP**: tên, `awName`, `tip`, **biểu tượng** cả 5 |
+| `web/js/sigils.js` | Ấn Ký → **BÍ KÍP**: tên, `awName`, `tip`, **biểu tượng** cả 5 · 3 chỗ `'lighter'` → `'source-over'` |
+| `web/styles.css` | Bảng màu `:root` đổi sang giấy kem / chữ mực + **khối "ĐÈ PHONG CÁCH TRUYỆN TRANH" ở cuối file**: giấy, viền mực 3px, bóng đổ CỨNG, vân halftone, bỏ hết glow |
 | `web/index.html` | Tiêu đề NEON KITCHEN, phụ đề, "CHỌN ĐẦU BẾP", mục hướng dẫn, tiêu đề màn kết thúc |
 | `web/icon.svg`, `web/manifest.json` | Biểu tượng ứng dụng: đầu chuột đội mũ đầu bếp |
 | `web/build.ps1` | Xuất ra `dist/NeonKitchen.html` (trước là `NeonHorde.html`) |
 | `web/tools/sprites.html` | **MỚI** — trang xem toàn bộ sprite, không chạy vòng lặp game |
 
-**KHÔNG đổi**: `game.js`, `entities.js`, `debug.js`, `ui.js`, `utils.js`, `audio.js`,
-`input.js`, `main.js`, và mọi con số cân bằng.
+> Khối CSS đè đặt **cuối file** và cố ý đè lên các luật neon phía trên (cùng độ ưu tiên thì
+> luật sau thắng). Làm vậy thay vì sửa rải rác 270 dòng để dễ đọc và **xoá khối đó là quay
+> lại nguyên bản neon**.
+
+**KHÔNG đổi**: `entities.js`, `debug.js`, `ui.js`, `utils.js`, `audio.js`, `input.js`,
+`main.js`, và mọi con số cân bằng.
 
 ### Bảng tra tên: `main` → `theme-dau-bep`
 

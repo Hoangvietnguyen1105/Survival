@@ -1206,7 +1206,7 @@ const G = {
   draw() {
     const g = this.ctx;
     g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    g.fillStyle = '#06070d';
+    g.fillStyle = '#4a3526';
     g.fillRect(0, 0, this.W, this.H);
 
     g.save();
@@ -1221,7 +1221,7 @@ const G = {
       const R = s.r * this.stats.area * (aw.evolved ? 1.35 : 1);
       const p = this.player;
       g.save();
-      g.globalCompositeOperation = 'lighter';
+      g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
       const grd = g.createRadialGradient(p.x, p.y, R * .25, p.x, p.y, R);
       const c = aw.evolved ? '#c14dff' : '#b6ff3a';
       grd.addColorStop(0, rgba(c, .02));
@@ -1238,7 +1238,7 @@ const G = {
     // frost novas
     for (const n of this.novas) {
       const t = 1 - n.life / n.maxLife;
-      g.save(); g.globalCompositeOperation = 'lighter';
+      g.save(); g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
       g.globalAlpha = (1 - t) * .55;
       const grd = g.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * (0.4 + t * .8));
       grd.addColorStop(0, rgba(n.color, .5));
@@ -1252,7 +1252,7 @@ const G = {
     for (const z of this.zones) {
       const t = clamp(z.life / z.maxLife, 0, 1);
       g.save();
-      g.globalCompositeOperation = 'lighter';
+      g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
       const grd = g.createRadialGradient(z.x, z.y, 0, z.x, z.y, z.r);
       grd.addColorStop(0, rgba(z.color, .30 * t));
       grd.addColorStop(.72, rgba(z.color, .15 * t));
@@ -1271,7 +1271,7 @@ const G = {
     // vòng ngắm khi đang lái bằng chuột
     if (Input.mouseActive) {
       g.save();
-      g.globalCompositeOperation = 'lighter';
+      g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
       const cr = 13 + Math.sin(this.time * 9) * 2.5;
       g.strokeStyle = 'rgba(37,244,238,.75)'; g.lineWidth = 2;
       g.beginPath(); g.arc(Input.cursorX, Input.cursorY, cr, 0, TAU); g.stroke();
@@ -1285,7 +1285,7 @@ const G = {
     for (let i = 0; i < pa.length; i++) drawPickup(g, this, pa[i]);
 
     // enemy bullets
-    g.save(); g.globalCompositeOperation = 'lighter';
+    g.save(); g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
     const spr = Art.get('b_enemy');
     const eb = this.ebullets.active;
     for (let i = 0; i < eb.length; i++) {
@@ -1303,13 +1303,13 @@ const G = {
     if (this.player && this.state !== 'menu') drawPlayer(g, this);
 
     // player bullets
-    g.save(); g.globalCompositeOperation = 'lighter';
+    g.save(); g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
     const ba = this.bullets.active;
     for (let i = 0; i < ba.length; i++) drawBullet(g, this, ba[i]);
     g.restore();
 
     // beams
-    g.save(); g.globalCompositeOperation = 'lighter';
+    g.save(); g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
     for (const b of this.beams) {
       const t = b.life / b.maxLife;
       const w = b.w * t;
@@ -1348,7 +1348,7 @@ const G = {
     this.drawEclipse(g);
 
     if (Cam.flash > 0) {
-      g.globalCompositeOperation = 'lighter';
+      g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
       g.globalAlpha = Cam.flash * .5;
       g.fillStyle = Cam.flashColor;
       g.fillRect(0, 0, this.W, this.H);
@@ -1367,7 +1367,7 @@ const G = {
     const p = this.player;
     if (p && this.state === 'playing' && p.hp / p.maxHp < .3) {
       const a = (.18 + Math.sin(this.time * 7) * .12) * (1 - p.hp / p.maxHp / .3);
-      g.globalCompositeOperation = 'lighter';
+      g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
       const rg = g.createRadialGradient(this.W / 2, this.H / 2, Math.min(this.W, this.H) * .3,
         this.W / 2, this.H / 2, Math.max(this.W, this.H) * .7);
       rg.addColorStop(0, 'rgba(255,0,40,0)');
@@ -1412,13 +1412,18 @@ const G = {
     g.fillRect(0, 0, this.W, this.H);
     // vành nhật hoa mờ ở rìa vùng sáng, cho biết đây là hiệu ứng chứ không phải lỗi
     g.save();
-    g.globalCompositeOperation = 'lighter';
+    g.globalCompositeOperation = 'source-over';   // theme truyện tranh: KHÔNG cộng sáng, nền kem sáng sẽ bị trắng xoá
     g.globalAlpha = this.eclipseT * .18;
     g.strokeStyle = '#ff6a2e'; g.lineWidth = 2;
     g.beginPath(); g.arc(sx, sy, rIn, 0, TAU); g.stroke();
     g.restore();
   },
 
+  /**
+   * SÀN BẾP kiểu truyện tranh: gạch men vuông hai màu kem, đường vữa tối, viền mực dày.
+   * Bản gốc (`main`) là lưới neon xanh trên nền đen — đổi hẳn ở nhánh theme này.
+   * Ngoài đấu trường là sàn gỗ tối, để người chơi thấy rõ đâu là mép sân.
+   */
   drawBackground(g) {
     const A = this.arena;
     const z = Cam.zoom;
@@ -1426,56 +1431,50 @@ const G = {
     const x0 = Cam.x - vw / 2, x1 = Cam.x + vw / 2;
     const y0 = Cam.y - vh / 2, y1 = Cam.y + vh / 2;
 
-    // floor
-    g.fillStyle = '#080a14';
+    /* nền kem */
+    g.fillStyle = '#f7ecd6';
     g.fillRect(x0 - 10, y0 - 10, vw + 20, vh + 20);
 
-    // subtle radial center glow
-    const cg = g.createRadialGradient(0, 0, 0, 0, 0, A);
-    cg.addColorStop(0, 'rgba(30,40,80,.35)');
-    cg.addColorStop(1, 'rgba(10,12,26,0)');
-    g.fillStyle = cg;
-    g.fillRect(-A, -A, A * 2, A * 2);
+    /* gạch men so le hai màu */
+    const step = 120;
+    const cx0 = Math.floor(x0 / step), cx1 = Math.ceil(x1 / step);
+    const cy0 = Math.floor(y0 / step), cy1 = Math.ceil(y1 / step);
+    g.fillStyle = '#eeddba';
+    for (let cx = cx0; cx <= cx1; cx++) {
+      for (let cy = cy0; cy <= cy1; cy++) {
+        if ((cx + cy) & 1) g.fillRect(cx * step, cy * step, step, step);
+      }
+    }
 
-    // grid
-    const step = 80;
-    g.lineWidth = 1;
-    g.strokeStyle = 'rgba(90,130,220,.09)';
+    /* đường vữa */
+    g.lineWidth = 3;
+    g.strokeStyle = 'rgba(150,116,68,.32)';
     g.beginPath();
-    for (let x = Math.floor(x0 / step) * step; x < x1; x += step) {
-      g.moveTo(x, y0); g.lineTo(x, y1);
-    }
-    for (let y = Math.floor(y0 / step) * step; y < y1; y += step) {
-      g.moveTo(x0, y); g.lineTo(x1, y);
-    }
+    for (let cx = cx0; cx <= cx1; cx++) { g.moveTo(cx * step, y0); g.lineTo(cx * step, y1); }
+    for (let cy = cy0; cy <= cy1; cy++) { g.moveTo(x0, cy * step); g.lineTo(x1, cy * step); }
     g.stroke();
 
-    // brighter every 5th
-    const step5 = step * 5;
-    g.strokeStyle = 'rgba(110,170,255,.13)';
-    g.beginPath();
-    for (let x = Math.floor(x0 / step5) * step5; x < x1; x += step5) {
-      g.moveTo(x, y0); g.lineTo(x, y1);
-    }
-    for (let y = Math.floor(y0 / step5) * step5; y < y1; y += step5) {
-      g.moveTo(x0, y); g.lineTo(x1, y);
-    }
-    g.stroke();
-
-    // arena border
-    g.save();
-    g.globalCompositeOperation = 'lighter';
-    g.strokeStyle = 'rgba(37,244,238,.5)';
-    g.lineWidth = 4;
-    g.shadowBlur = 26; g.shadowColor = '#25f4ee';
-    g.strokeRect(-A, -A, A * 2, A * 2);
-    g.restore();
-
-    // outside darkness
-    g.fillStyle = 'rgba(2,3,8,.92)';
+    /* ngoài đấu trường: sàn gỗ tối */
+    g.fillStyle = '#4a3526';
     if (x0 < -A) g.fillRect(x0 - 10, y0 - 10, (-A) - x0 + 10, vh + 20);
     if (x1 > A) g.fillRect(A, y0 - 10, x1 - A + 10, vh + 20);
     if (y0 < -A) g.fillRect(x0 - 10, y0 - 10, vw + 20, (-A) - y0 + 10);
     if (y1 > A) g.fillRect(x0 - 10, A, vw + 20, y1 - A + 10);
+
+    /* viền mực dày + vạch cảnh báo vàng đen ở mép sân */
+    g.save();
+    g.lineWidth = 16;
+    g.strokeStyle = '#ffc93c';
+    g.strokeRect(-A, -A, A * 2, A * 2);
+    g.lineWidth = 16;
+    g.setLineDash([34, 34]);
+    g.strokeStyle = INK;
+    g.strokeRect(-A, -A, A * 2, A * 2);
+    g.setLineDash([]);
+    g.lineWidth = 5;
+    g.strokeStyle = INK;
+    g.strokeRect(-A - 8, -A - 8, A * 2 + 16, A * 2 + 16);
+    g.strokeRect(-A + 8, -A + 8, A * 2 - 16, A * 2 - 16);
+    g.restore();
   }
 };
