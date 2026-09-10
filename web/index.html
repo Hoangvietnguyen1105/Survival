@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#06070d">
+<title>NEON HORDE</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+</head>
+<body>
+
+<div id="app">
+  <canvas id="game"></canvas>
+
+  <!-- ================= HUD ================= -->
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div class="bars">
+        <div class="bar hp"><div class="fill" id="hpFill"></div><span id="hpText">100/100</span></div>
+        <div class="bar xp"><div class="fill" id="xpFill"></div><span id="xpText">Lv.1</span></div>
+      </div>
+      <div class="wave-box">
+        <div class="wave-label">MÀN <b id="waveNum">1</b></div>
+        <div class="wave-timer" id="waveTimer">0:35</div>
+      </div>
+      <div class="stats-mini">
+        <div><i class="ic-skull"></i><span id="killCount">0</span></div>
+        <div><i class="ic-coin"></i><span id="goldCount">0</span></div>
+      </div>
+    </div>
+
+    <div class="hud-bottom">
+      <div id="weaponSlots" class="slots"></div>
+      <div id="passiveSlots" class="slots small"></div>
+      <div id="sigilSlots" class="slots small"></div>
+    </div>
+
+    <button id="pauseBtn" class="icon-btn" aria-label="Tạm dừng">II</button>
+    <div id="bossBarWrap" class="hidden">
+      <div class="boss-name" id="bossName">TRÙM</div>
+      <div class="boss-bar"><div class="fill" id="bossFill"></div></div>
+      <div id="bossRule" class="boss-rule hidden">
+        <b id="bossRuleName">LUẬT</b><span id="bossRuleDesc"></span>
+      </div>
+    </div>
+    <div id="announce"></div>
+  </div>
+
+  <!-- ================= TOUCH ================= -->
+  <div id="touchLayer" class="hidden">
+    <div id="stickBase"><div id="stickKnob"></div></div>
+    <button id="dashBtn">DASH</button>
+  </div>
+
+  <!-- ================= MENU ================= -->
+  <div id="menu" class="screen">
+    <div class="title-wrap">
+      <h1 class="title" data-text="NEON HORDE">NEON HORDE</h1>
+      <p class="subtitle">Sống sót giữa bầy quái · Roguelike Survivor</p>
+    </div>
+
+    <div class="char-select">
+      <div class="section-label">CHỌN NHÂN VẬT</div>
+      <div id="charList" class="char-list"></div>
+      <div id="charDesc" class="char-desc"></div>
+    </div>
+
+    <div class="menu-actions">
+      <button id="playBtn" class="btn primary big">BẮT ĐẦU</button>
+      <div class="menu-row">
+        <button id="howBtn" class="btn ghost">Hướng dẫn</button>
+        <button id="muteBtn" class="btn ghost">Âm thanh: BẬT</button>
+      </div>
+    </div>
+
+    <div class="best-row">Kỷ lục: <b id="bestRecord">Màn 0</b></div>
+  </div>
+
+  <!-- ================= HOW TO PLAY ================= -->
+  <div id="howto" class="screen hidden">
+    <h2 class="panel-title">HƯỚNG DẪN</h2>
+    <div class="howto-body">
+      <div class="how-item"><b>Di chuyển — 3 cách</b><span><b>Chuột:</b> giữ chuột trái, nhân vật chạy tới con trỏ · <b>Ngón tay:</b> chạm &amp; kéo bất kỳ đâu để hiện cần điều khiển ảo · <b>Bàn phím:</b> WASD / phím mũi tên</span></div>
+      <div class="how-item"><b>Tấn công</b><span>Tự động! Vũ khí tự bắn kẻ địch gần nhất. Bạn chỉ cần né.</span></div>
+      <div class="how-item"><b>Lướt (Dash)</b><span>Space / Shift · <b>chuột phải</b> · nút DASH — miễn thương trong lúc lướt</span></div>
+      <div class="how-item"><b>Ngọc kinh nghiệm</b><span>Nhặt để lên cấp và chọn nâng cấp mới</span></div>
+      <div class="how-item"><b>Tiến hoá vũ khí</b><span>Vũ khí lên cấp TỐI ĐA + trang bị đi kèm đạt cấp 3 sẽ mở thẻ TIẾN HOÁ (viền vàng). Cả 10 vũ khí đều đổi hẳn cách hoạt động, không chỉ tăng số.</span></div>
+      <div class="how-item"><b>Ấn Ký (buff 4 tầng)</b><span>Thẻ viền hồng nét đứt. Tầng 4 bị KHOÁ cho tới khi bạn đạt đủ chỉ số ghi trên thẻ — ví dụ Ấn Lôi Đình cần Tốc đánh ≥ 150%. Tầng 4 là pha lật kèo.</span></div>
+      <div class="how-item"><b>Trùm</b><span>Xuất hiện mỗi 5 màn. Hạ trùm để nhận rương báu.</span></div>
+      <div class="how-item"><b>Tạm dừng</b><span>ESC / Nút II góc phải</span></div>
+    </div>
+    <button id="howBack" class="btn primary">QUAY LẠI</button>
+  </div>
+
+  <!-- ================= LEVEL UP ================= -->
+  <div id="levelup" class="screen hidden">
+    <div class="lvl-head">
+      <h2 class="panel-title" id="lvlTitle">LÊN CẤP!</h2>
+      <p class="panel-sub" id="lvlSub">Chọn một nâng cấp</p>
+    </div>
+    <div id="cardRow" class="card-row"></div>
+    <button id="rerollBtn" class="btn ghost small">🎲 Đổi bài (<span id="rerollLeft">1</span>)</button>
+  </div>
+
+  <!-- ================= PAUSE ================= -->
+  <div id="pause" class="screen hidden">
+    <h2 class="panel-title">TẠM DỪNG</h2>
+    <div id="statPanel" class="stat-panel"></div>
+    <div class="menu-actions">
+      <button id="resumeBtn" class="btn primary">TIẾP TỤC</button>
+      <button id="quitBtn" class="btn danger ghost">Bỏ cuộc</button>
+    </div>
+  </div>
+
+  <!-- ================= GAME OVER ================= -->
+  <div id="gameover" class="screen hidden">
+    <h2 class="panel-title" id="goTitle">BẠN ĐÃ GỤC NGÃ</h2>
+    <div class="result-grid" id="resultGrid"></div>
+    <div id="goLoadout" class="go-loadout"></div>
+    <div class="menu-actions">
+      <button id="retryBtn" class="btn primary big">CHƠI LẠI</button>
+      <button id="menuBtn" class="btn ghost">Về menu</button>
+    </div>
+  </div>
+
+  <div id="fade"></div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/gfx.js"></script>
+<script src="js/input.js"></script>
+<script src="js/data.js"></script>
+<script src="js/sigils.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

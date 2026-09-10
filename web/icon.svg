@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#141c34"/>
+      <stop offset="100%" stop-color="#06070d"/>
+    </radialGradient>
+    <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eafcff"/>
+      <stop offset="55%" stop-color="#25f4ee"/>
+      <stop offset="100%" stop-color="#ff2e88"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+
+  <!-- arena grid -->
+  <g stroke="#3f6bb5" stroke-opacity="0.18" stroke-width="2">
+    <path d="M0 128h512M0 256h512M0 384h512M128 0v512M256 0v512M384 0v512"/>
+  </g>
+
+  <!-- orbiting blades -->
+  <g filter="url(#glow)" opacity="0.9">
+    <circle cx="256" cy="256" r="150" fill="none" stroke="#25f4ee" stroke-opacity="0.35"
+            stroke-width="4" stroke-dasharray="18 26"/>
+    <circle cx="256" cy="106" r="15" fill="#eafcff"/>
+    <circle cx="386" cy="331" r="15" fill="#25f4ee"/>
+    <circle cx="126" cy="331" r="15" fill="#ff2e88"/>
+  </g>
+
+  <!-- player ship -->
+  <g filter="url(#glow)">
+    <path d="M256 150 L340 350 L256 306 L172 350 Z" fill="url(#blade)"/>
+    <circle cx="256" cy="238" r="24" fill="#06070d" fill-opacity="0.55"/>
+    <circle cx="256" cy="238" r="13" fill="#ffffff"/>
+  </g>
+</svg>

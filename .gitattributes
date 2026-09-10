@@ -1,0 +1,28 @@
+# Chuẩn hoá kiểu xuống dòng: trong kho luôn là LF, khi lấy về máy Windows Git tự đổi.
+# Không có file này thì mỗi lần Unity đụng vào file .meta là Git lại báo "cả file thay đổi"
+# dù nội dung y hệt — diff sẽ đầy rác, không soi được gì.
+* text=auto eol=lf
+
+# File nhị phân: cấm Git đụng vào byte nào
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.svg  text
+*.mp3  binary
+*.wav  binary
+*.ogg  binary
+*.ttf  binary
+*.otf  binary
+*.woff binary
+*.woff2 binary
+*.unitypackage binary
+*.dll  binary
+*.so   binary
+*.a    binary
+*.apk  binary
+*.aab  binary
+
+# Script PowerShell phải giữ CRLF, một số phiên bản Windows không chạy được LF
+*.ps1  text eol=crlf

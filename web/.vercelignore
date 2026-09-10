@@ -1,0 +1,4 @@
+# File chỉ dùng khi phát triển, không cần đẩy lên máy chủ
+build.ps1
+README.md
+_goc.html

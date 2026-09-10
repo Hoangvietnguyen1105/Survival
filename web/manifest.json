@@ -1,0 +1,26 @@
+{
+  "name": "NEON HORDE",
+  "short_name": "Neon Horde",
+  "description": "Roguelike survivor - sống sót giữa bầy quái.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#06070d",
+  "theme_color": "#06070d",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
