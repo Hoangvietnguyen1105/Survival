@@ -1,0 +1,18 @@
+# Kho này chứa CẢ hai bản: trang web (web/) và project Unity (Assets/, ...).
+# Vercel chỉ phục vụ được trang web, phần Unity chỉ làm nặng thêm mỗi lần deploy
+# nên loại hẳn ra. ĐỪNG loại thư mục web/ — đó là thứ duy nhất cần đẩy lên.
+#
+# Thư mục nào Vercel lấy làm gốc trang web thì khai trong vercel.json
+# ("outputDirectory": "web").
+
+Assets/
+Packages/
+ProjectSettings/
+UserSettings/
+Library/
+Logs/
+Temp/
+tools/
+docs_screenshot.png
+CLAUDE.md
+README.md
