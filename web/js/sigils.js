@@ -33,10 +33,21 @@ const SIGILS = {
       g.lineTo(-r * .16, r * .58); g.lineTo(r * .34, -r * .1); g.lineTo(r * .03, -r * .1);
       g.closePath(); g.fill(); g.stroke();
     },
+    /* Hàng rào thời gian của onHit — xem chú thích ngay dưới. */
+    tick(G, st, dt) { if (st.cd > 0) st.cd -= dt; },
+
     onHit(G, st, e) {
+      /* ⚠️ onHit chạy MỖI LẦN MỘT CON quái ăn đòn, không phải mỗi lần bắn. Một vụ nổ diện
+         rộng trúng 40 con sẽ nạp đủ bộ đếm 6-7 lần trong CÙNG MỘT khung hình → Ấn này càng
+         mạnh đúng lúc quái càng đông. Đo ở màn 30 với 260 con: 31 tia/giây, sát thương gấp
+         khoảng 200 LẦN chính khẩu súng đang cầm.
+         Bộ đếm giữ nguyên cho cảm giác "cứ vài đòn lại có sét", nhưng phải qua thêm hàng
+         rào thời gian này. Cùng loại bệnh với trần hồi máu (CLAUDE.md mục 5B / bẫy số 10). */
+      if (st.cd > 0) return;
       const every = [8, 6, 5, 6][st.lv - 1];
       if (++st.n < every) return;
       st.n = 0;
+      st.cd = [.8, .65, .55, .45][st.lv - 1];
       const aw = st.lv >= 4;
       Sigils.chain(G, e, [1, 3, 4, 6][st.lv - 1],
         (24 + G.wave * 4.5) * G.stats.damage, {
@@ -231,12 +242,14 @@ const Sigils = {
   flames: [],
   freezeT: 0,
   flashT: 0,
+  execN: 0,          // đếm số lần HÀNH QUYẾT — xem execute()
 
   reset() {
     this.holes.length = 0;
     this.flames.length = 0;
     this.freezeT = 0;
     this.flashT = 0;
+    this.execN = 0;
   },
 
   /** Đã đủ chỉ số để mở tầng cuối chưa? */
@@ -409,15 +422,25 @@ const Sigils = {
 
   /** Hành quyết: giết ngay và bắn ra sóng máu. */
   execute(G, e) {
-    const wave = (10 + G.wave * 1.8) * G.stats.damage;
+    /* ⚠️ Số lần HÀNH QUYẾT mỗi giây tỉ lệ thuận với SỐ QUÁI ĐANG ĐÔNG. Nếu mỗi lần đều
+       nổ một sóng máu diện rộng thì riêng Ấn này đã gấp ~50 lần khẩu súng đang cầm
+       (đo ở màn 30, 260 con: 23 283 dps so với 434). Đòn hành quyết giữ nguyên — đó mới
+       là thứ người chơi mua — nhưng SÓNG MÁU chỉ nổ ở mỗi lần thứ 4.
+       Cùng loại bệnh với ẤN LÔI ĐÌNH và trần hồi máu: xem CLAUDE.md bẫy số 10. */
+    const boom = (++this.execN % 4) === 0;
     FloatText.add(e.x, e.y - 20, 'HÀNH QUYẾT', '#ff2e88', 17);
-    Particles.shockwave(e.x, e.y, 90, '#ff2e88');
-    Particles.burst(e.x, e.y, 10, '#ff2e88', { speed: 280, life: .45, size: 5 });
-    Sfx.explode(false);
-    this.flashT = .09;
-    for (const o of G.enemiesInRadius(e.x, e.y, 130)) {
-      if (o === e) continue;
-      G.damageEnemy(o, wave, { knock: 160, ang: angleTo(e.x, e.y, o.x, o.y), sigil: true });
+    if (boom) {
+      const wave = (10 + G.wave * 1.8) * G.stats.damage;
+      Particles.shockwave(e.x, e.y, 90, '#ff2e88');
+      Particles.burst(e.x, e.y, 10, '#ff2e88', { speed: 280, life: .45, size: 5 });
+      Sfx.explode(false);
+      this.flashT = .09;
+      for (const o of G.enemiesInRadius(e.x, e.y, 130)) {
+        if (o === e) continue;
+        G.damageEnemy(o, wave, { knock: 160, ang: angleTo(e.x, e.y, o.x, o.y), sigil: true });
+      }
+    } else {
+      Particles.burst(e.x, e.y, 4, '#ff2e88', { speed: 200, life: .3, size: 4 });
     }
     G.damageEnemy(e, 99999, { silent: true, sigil: true });
   },

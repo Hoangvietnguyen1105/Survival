@@ -44,6 +44,14 @@ const G = {
      không hết giờ nên không sang màn và không tự gọi trùm. */
   dbgLockWave: 0,
   dbgGod: false,
+
+  /* Trần nhịp rơi cho hai vật phẩm "xoá sạch màn hình". Tỉ lệ rơi tính THEO MẠNG, mà
+     cuối game hạ tới ~130 mạng/giây → nam châm và bom hạt nhân rơi liên tục và ván đấu
+     thành đi bộ (đo ở màn 30: 0,5 quả bom hạt nhân MỖI GIÂY).
+     Đầu game chỉ ~2 mạng/giây nên hai con số dưới đây không bao giờ chạm tới → độ khó
+     những màn đầu giữ nguyên y hệt. Cùng loại bệnh với trần hồi máu (bẫy số 10). */
+  DROP_CD: { magnet: 14, nuke: 45 },
+  dropCd: { magnet: 0, nuke: 0 },
   pendingLevels: 0,
   slowmo: 1, slowmoT: 0,
 
@@ -92,6 +100,7 @@ const G = {
     this.waveState = 'fight';
     this.kills = 0; this.gold = 0; this.dmgDealt = 0;
     this.healPool = 0;
+    this.dropCd.magnet = 0; this.dropCd.nuke = 0;
     this.dbgLockWave = 0;      // ván mới luôn thoát MAP TEST
     this.time = 0; this.runTime = 0;
     this.pendingLevels = 0;
@@ -150,6 +159,9 @@ const G = {
     this.time += sdt;
     this.runTime += sdt;
     this.dmgBudget = 9;
+
+    if (this.dropCd.magnet > 0) this.dropCd.magnet -= sdt;
+    if (this.dropCd.nuke > 0) this.dropCd.nuke -= sdt;
 
     /* ---- hũ hồi máu, đầy lại theo thời gian (xem HEAL_BASE / HEAL_LS) ---- */
     const healCap = this.player.maxHp * (G.HEAL_BASE + this.stats.lifesteal * G.HEAL_LS);
@@ -773,8 +785,12 @@ const G = {
     } else {
       if (luck < .022) this.pickups.spawn(e.x, e.y, 'heart', 14);
       else if (luck < .055) this.pickups.spawn(e.x, e.y, 'coin', 3);
-      else if (luck < .062) this.pickups.spawn(e.x, e.y, 'magnet', 1);
-      else if (luck < .066) this.pickups.spawn(e.x, e.y, 'nuke', 1);
+      // hai cái này phải qua trần nhịp, xem DROP_CD
+      else if (luck < .062) {
+        if (this.dropCd.magnet <= 0) { this.dropCd.magnet = this.DROP_CD.magnet; this.pickups.spawn(e.x, e.y, 'magnet', 1); }
+      } else if (luck < .066) {
+        if (this.dropCd.nuke <= 0) { this.dropCd.nuke = this.DROP_CD.nuke; this.pickups.spawn(e.x, e.y, 'nuke', 1); }
+      }
     }
   },
 

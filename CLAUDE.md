@@ -500,6 +500,81 @@ Ván đấu vẫn đi được tới màn 30+, nhưng từ màn 35 trở đi là
 
 ---
 
+## 5D. ĐỢT SỬA "ẤN SÉT QUÁ IMBA + BOM HẠT NHÂN RƠI QUÁ NHIỀU" (phiên 5, sau khi người dùng chơi thử)
+
+Người dùng báo: *"ấn ký sét quá imba, khi quái đông sẽ có những lúc giật quá nhiều con một
+lúc, cộng với item thanh tẩy khá nhiều khiến game khá dễ."*
+
+Cả hai đều là **cùng một loại bệnh với trần hồi máu**: tần suất tỉ lệ thuận với SỐ QUÁI
+hoặc SỐ MẠNG, mà hai thứ đó cuối game lớn không giới hạn.
+
+### 1. ẤN LÔI ĐÌNH — `onHit` chạy mỗi lần MỘT CON ăn đòn, không phải mỗi lần bắn
+
+Một quả bom trúng 40 con là 40 lần gọi `onHit` **trong cùng một khung hình** → bộ đếm
+"cứ 6 đòn một tia" nạp đầy 6–7 lần liền. Ấn càng mạnh đúng lúc quái càng đông.
+
+Đo ở MAP TEST màn 30, BOM RẢI cấp 8 (không tiến hoá, để không có phản ứng dây chuyền
+làm nhiễu số), không trang bị:
+
+| | Trước | Sau |
+|---|---|---|
+| Tia sét mỗi giây | **77,1** | **1,2** |
+| Điểm sét trên màn hình mỗi giây | **462,6** | **7,2** — còn **1/64** |
+| Sát thương/giây | 119 207 | 41 803 — còn **1/2,9** |
+| Kill trong 30 giây | 2 977 | 1 130 |
+
+**Cách sửa:** giữ nguyên bộ đếm "cứ N đòn một tia" (cho còn cảm giác cũ) nhưng thêm
+**hàng rào thời gian** `st.cd` = 0,8 / 0,65 / 0,55 / 0,45 giây theo tầng, có `tick()` trừ dần.
+Đầu game bộ đếm mới là thứ chặn (súng lục cấp 1 chỉ ~1,7 đòn/giây → 3,5 giây mới đủ 6 đòn),
+hàng rào không bao giờ chạm tới → **màn đầu không đổi gì**.
+
+### 2. ẤN HUYẾT NGUYỆT — sóng máu nổ theo mỗi lần hành quyết
+
+Số lần HÀNH QUYẾT mỗi giây cũng tỉ lệ với mật độ quái, mà mỗi lần lại nổ một sóng máu
+bán kính 130. Đo ở màn 30: riêng Ấn này **gấp ~50 lần** khẩu súng đang cầm.
+
+**Cách sửa:** đòn hành quyết giữ nguyên (đó mới là thứ người chơi mua), nhưng **sóng máu
+chỉ nổ ở mỗi lần thứ 4** (`Sigils.execN`).
+
+### 3. Bom hạt nhân & nam châm — tỉ lệ rơi tính theo MẠNG
+
+0,4% mỗi mạng nghe thì bé, nhưng màn 30 hạ ~34 mạng/giây. Đo trong 60 giây ở màn 30:
+**5 quả bom hạt nhân và 7 nam châm** — mỗi quả bom xoá sạch màn hình.
+
+**Cách sửa:** `G.DROP_CD` — bom hạt nhân tối đa **1 quả / 45 giây**, nam châm **1 / 14 giây**.
+Đầu game chỉ ~2 mạng/giây nên hai con số này không bao giờ chạm tới.
+
+### Kết quả — bot mang bộ trang bị hoàn thiện thả vào từng màn, 100 giây mỗi lần
+
+| Màn | Trước đợt này | Sau |
+|---|---|---|
+| 15 | đầy máu | đầy máu (183–208 / 210) |
+| 20 | còn 41% máu | đầy máu (182–198 / 210) |
+| 25 | sống | **chết ở giây 53–59** (cả 3 lần) |
+| 35–40 | chết ở giây 88–110 | chết ở giây 18 |
+
+Bức tường của bot chuyển từ màn ~35 về **màn ~25**. Ván thường từ màn 1 không đổi
+(bot vẫn tới màn 5–7 như trước).
+
+### ⚠️ Còn lại chưa đụng: ẤN HƯ KHÔNG vẫn phình theo mật độ
+
+Đo trên bàn đo kín (tank màn 10, súng lục cấp 8 không tiến hoá, không trang bị):
+
+| Ấn tầng 4 | 40 quái | 150 quái |
+|---|---|---|
+| ẤN LÔI ĐÌNH (đã sửa) | 3,1× | **3,1×** — không còn phình theo mật độ |
+| ẤN HƯ KHÔNG | 3,4× | **11,8×** ← vẫn phình |
+| ẤN HUYẾT NGUYỆT | 1,3× | 1,0× |
+| ẤN BĂNG TINH | 1,2× | 1,3× |
+
+ẤN HƯ KHÔNG là đòn **theo chu kỳ 12–14 giây** (hố đen + siêu tân tinh) nên nó phình theo
+mật độ là đúng thiết kế "pha lật kèo" — cố ý để nguyên. Nếu người dùng kêu thì cắt tiếp.
+
+> ⚠️ Bàn đo dùng quái `tank` **đo sai ẤN HUYẾT NGUYỆT và ẤN BĂNG TINH**: hành quyết chỉ ăn
+> với quái yếu, đóng băng vỡ xác cũng vậy. Muốn đo hai Ấn đó phải đổi sang `grunt`/`swarm`.
+
+---
+
 ## 5C. NÚM VẶN & CẢNH BÁO CHUNG (từ phiên 4, vẫn đúng)
 
 ### Ấn Ký tầng 4 — đã cắt xuống ~1/3 (không vướng sàn nào vì là sức mạnh cộng thêm thuần)
@@ -529,6 +604,9 @@ Ván đấu vẫn đi được tới màn 30+, nhưng từ màn 35 trở đi là
   tăng, **khó hơn** thì giảm. Đây là núm mạnh nhất để điều chỉnh "có thể thua hay không".
 - **`ex` trong `spawnEnemy`** (phiên 5) — độ dốc máu quái sau màn 10 (`.012` mỗi màn).
   Đặt về `1.75` cố định là quay lại đường cong cũ.
+- **`st.cd` trong `SIGILS.thunder.onHit`** (mục 5D) — hàng rào thời gian giữa hai tia sét.
+- **`G.DROP_CD`** (mục 5D) — nhịp rơi tối đa của bom hạt nhân và nam châm.
+- **`Sigils.execN % 4`** trong `execute()` (mục 5D) — cứ mấy lần hành quyết thì nổ sóng máu.
 
 ### Cảnh báo khi cân bằng
 - **Hiệu ứng ngưỡng**: Lưỡi Hái nhảy từ 2,7 lên 23,5 kill/giây chỉ vì sát thương vượt qua
@@ -746,7 +824,14 @@ Ghi lại để đừng dẫm lại:
 9. **Đường dẫn dài làm Unity crash.** Thư mục scratch của phiên chat dài >248 ký tự →
    Unity crash khi tạo project. Phải để project ở đường dẫn ngắn.
 
-10. **Mọi thứ hồi máu theo SÁT THƯƠNG hay SỐ MẠNG đều phình vô hạn.** Hút máu, "hồi N máu
+10. **BẤT CỨ THỨ GÌ tính nhịp theo SÁT THƯƠNG, SỐ MẠNG hay SỐ QUÁI ĐANG ĐÔNG đều phình vô
+    hạn.** Đây là cái bẫy hay gặp nhất của game này, đã dính **ba lần** ở ba chỗ khác nhau:
+    hồi máu (mục 5B), ẤN LÔI ĐÌNH và ẤN HUYẾT NGUYỆT (mục 5D), bom hạt nhân rơi ra (mục 5D).
+    Dấu hiệu chung: đầu game số liệu trông rất hợp lý, cuối game thì gấp 50–200 lần.
+    **Luật:** hook nào chạy theo `onHit` / `onKill` / mỗi con trong vùng thì BẮT BUỘC phải
+    có hàng rào thời gian hoặc một cái hũ có trần. `onHit` đặc biệt nguy hiểm vì nó chạy
+    **mỗi lần MỘT CON ăn đòn**, nên một vụ nổ trúng 40 con là 40 lần gọi trong CÙNG một
+    khung hình. Chi tiết vụ hồi máu: Hút máu, "hồi N máu
     mỗi mạng", tim rơi ra từ quái — cả ba tăng cùng sức mạnh người chơi, còn máu tối đa
     thì cố định, nên cuối game người chơi **bất tử** (đo được: màn 35 ăn 5085 sát thương
     trong 120 giây mà vẫn đầy máu). Đã gom cả ba vào **một hũ có trần** (`G.HEAL_BASE` /
@@ -757,6 +842,14 @@ Ghi lại để đừng dẫm lại:
     dự phòng của `main.js` và (b) `UI.showLevelUp` ở mục 6. Cả hai đều cho ra con số trông
     hợp lý nhưng sai tới 2–3 lần. **Cách phát hiện duy nhất: so số đo với trần lý thuyết
     `sát thương × số đạn / hồi chiêu`.** Đã một lần chỉnh cân bằng cả buổi trên số liệu sai.
+
+    Thêm hai cái bẫy nữa của bàn đo, tìm ra ở mục 5D:
+    · **Đừng đo Ấn Ký bằng vũ khí có phản ứng dây chuyền** (ĐẠN PHÂN LIỆT tách đạn khi giết
+      được quái, bomber nổ khi chết, splitter tách đôi). Ấn giết nhiều → súng mạnh thêm →
+      vòng phản hồi, số đo nhảy loạn 3–4 lần giữa hai lần chạy giống hệt nhau.
+      Dùng **BOM RẢI hoặc súng lục KHÔNG tiến hoá + quái `tank`** thì số mới đứng yên.
+    · **Vũ khí dùng cờ `sigil: true` KHÔNG kích hoạt Ấn Ký** (hào quang, kiếm xoay sóng
+      xung kích). Đo ẤN LÔI ĐÌNH bằng hào quang sẽ ra 0 tia/giây và tưởng là đã sửa xong.
 
 12. **`resetEnemy` không xoá `e._split`.** Quái lấy lại từ Pool có thể còn nhãn `_split` cũ,
     nên nó sẽ không tách nữa (an toàn, chỉ hơi khác thiết kế). Chưa sửa vì lệch về phía an
