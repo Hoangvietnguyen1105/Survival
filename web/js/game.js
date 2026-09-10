@@ -38,6 +38,12 @@ const G = {
   HEAL_BASE: .045,
   HEAL_LS: 1.1,
   healPool: 0,
+
+  /* Móc nối cho BẢNG DEBUG (debug.js). Mặc định tắt — khi tắt thì game chạy y hệt
+     như không có bảng debug. `dbgLockWave` > 0 = đang ở MAP TEST: khoá màn lại,
+     không hết giờ nên không sang màn và không tự gọi trùm. */
+  dbgLockWave: 0,
+  dbgGod: false,
   pendingLevels: 0,
   slowmo: 1, slowmoT: 0,
 
@@ -86,6 +92,7 @@ const G = {
     this.waveState = 'fight';
     this.kills = 0; this.gold = 0; this.dmgDealt = 0;
     this.healPool = 0;
+    this.dbgLockWave = 0;      // ván mới luôn thoát MAP TEST
     this.time = 0; this.runTime = 0;
     this.pendingLevels = 0;
     this.bossActive = null;
@@ -773,6 +780,7 @@ const G = {
 
   hurtPlayer(dmg, src) {
     const p = this.player;
+    if (this.dbgGod) return;                    // bảng debug: bất tử
     if (p.iframe > 0 || this.state !== 'playing') return;
     if (Math.random() < this.stats.dodge) {
       FloatText.add(p.x, p.y - 24, 'NÉ!', '#8fa8ff', 16);
@@ -859,6 +867,10 @@ const G = {
   /* ===================== waves ===================== */
   updateWave(dt) {
     if (this.waveState === 'clear') return;
+
+    /* MAP TEST (bảng debug): giữ nguyên số màn và không cho đồng hồ chạy hết, nên
+       không sang màn và KHÔNG tự gọi trùm — trùm chỉ ra khi bấm nút trong bảng debug. */
+    if (this.dbgLockWave) { this.wave = this.dbgLockWave; this.waveTime = 99999; }
 
     if (this.bossActive) {
       if (this.bossActive.dead) { this.bossActive = null; this.clearBossRule(); }
@@ -980,10 +992,12 @@ const G = {
     UI.hideBossRule();
   },
 
-  startBoss() {
+  /** idx bỏ trống = chọn theo màn. Bảng debug truyền idx để gọi đích danh một con. */
+  startBoss(idx) {
     // QUAY VÒNG chứ không kẹp ở con cuối — hết 8 con thì quay lại con đầu,
     // độ khó về sau do `tier` bên dưới lo.
-    const idx = (Math.floor(this.wave / 5) - 1) % BOSSES.length;
+    if (idx === undefined) idx = Math.floor(this.wave / 5) - 1;
+    idx = ((idx % BOSSES.length) + BOSSES.length) % BOSSES.length;
     const bd = BOSSES[idx];
     const tier = Math.floor((this.wave - 1) / 15);
     const pos = this.edgeSpawnPos();
@@ -1005,6 +1019,16 @@ const G = {
   },
 
   endWave() {
+    /* MAP TEST: không sang màn, chỉ mở lại nhịp sinh quái (dùng khi hạ xong con trùm
+       được gọi bằng tay từ bảng debug). */
+    if (this.dbgLockWave) {
+      this.waveState = 'fight';
+      this.waveTime = 99999;
+      this.spawnT = .3;
+      this.ebullets.clear();
+      return;
+    }
+
     this.waveState = 'clear';
     // clear remaining enemies into xp
     for (const e of this.enemies.active.slice()) {

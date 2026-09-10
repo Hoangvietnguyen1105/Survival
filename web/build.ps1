@@ -11,7 +11,7 @@ $dist = Join-Path $root 'dist'
 if (-not (Test-Path $dist)) { New-Item -ItemType Directory -Path $dist | Out-Null }
 
 # --- thu tu file JS phai giu nguyen ---
-$jsFiles = @('utils.js', 'audio.js', 'gfx.js', 'input.js', 'data.js', 'sigils.js', 'entities.js', 'game.js', 'ui.js', 'main.js')
+$jsFiles = @('utils.js', 'audio.js', 'gfx.js', 'input.js', 'data.js', 'sigils.js', 'entities.js', 'game.js', 'ui.js', 'debug.js', 'main.js')
 
 $css = Get-Content (Join-Path $root 'styles.css') -Raw -Encoding UTF8
 

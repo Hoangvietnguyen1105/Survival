@@ -2,7 +2,7 @@
 
 > **Đọc file này trước khi làm bất cứ gì.** Nó ghi lại toàn bộ trạng thái, các quyết định
 > kỹ thuật, cách kiểm thử, và những cái bẫy đã mất công mới tìm ra.
-> Cập nhật lần cuối: 2026-09-10, phiên 5 (cắt sức mạnh cuối game + chữa bệnh "không thể thua").
+> Cập nhật lần cuối: 2026-09-10, phiên 5 (cắt sức mạnh cuối game · chữa bệnh "không thể thua" · bảng debug).
 
 ---
 
@@ -71,13 +71,48 @@ web/js/  (thứ tự nạp phải giữ nguyên, khai báo trong index.html VÀ 
 ├── entities.js  createPlayer/updatePlayer, Enemy, Bullet, Pickup
 ├── game.js      ★ `G` — vòng lặp, màn chơi, va chạm, sát thương, nâng cấp, vẽ
 ├── ui.js        `UI` — menu, thẻ bài, HUD, kết thúc
+├── debug.js     ★ `Dbg` — BẢNG DEBUG để căn chỉnh (mục 2B). Không phải nội dung game.
 └── main.js      khởi động + vòng lặp render (có dự phòng nếu rAF bị chặn)
 ```
+
+> Thêm file JS mới thì phải khai ở **CẢ HAI** chỗ: `index.html` và mảng `$jsFiles`
+> trong `build.ps1`. Quên một chỗ là bản `dist/` thiếu file mà không báo lỗi gì.
+
+## 2B. BẢNG DEBUG (`web/js/debug.js`)
+
+Mở bằng nút **🔧** cạnh nút tạm dừng, hoặc phím **F2**. Chỉ mở được khi đang trong ván.
+Mở bảng là game tạm dừng; đóng bảng là chạy tiếp.
+
+| Mục | Làm gì |
+|---|---|
+| **VŨ KHÍ** | Bấm 1 trong 10 cái → **xoá sạch vũ khí đang có, chỉ còn cái đó**. Chọn cấp 1–8. Nút **ĐỘT PHÁ** bật thẳng bản TIẾN HOÁ, không cần trang bị đi kèm cấp 3. |
+| **ẤN KÝ** | Đặt tầng 0–4 cho từng Ấn, **tầng 4 mở thẳng**, bỏ qua điều kiện chỉ số. Không giới hạn 3 Ấn. |
+| **TRANG BỊ** | `XOÁ HẾT` (để đo thuần vũ khí) hoặc `MAX 6 CÁI TẤN CÔNG` (ngọc cường lực · đồng hồ cát · đá mở rộng · kính sát thủ · móng vuốt · ống đạn phụ, đúng trần 6 chỗ). |
+| **MAP TEST** | Nhảy tới độ khó của một màn bất kỳ (10/20/25/30/35/40/45). Màn **không bao giờ hết giờ** nên không sang màn và **không tự gọi trùm** — đo bao lâu cũng được. Đồng hồ màn hiện `∞ TEST`. |
+| **BẤT TỬ** | Tắt hẳn `hurtPlayer`, đứng yên đo cho chuẩn. |
+| **CHẶN LÊN CẤP** | Bật sẵn trong MAP TEST. **Bắt buộc phải có**: nhặt ngọc vẫn lên cấp, mà chọn thẻ thì game lắp thêm vũ khí/trang bị khác → hỏng luôn phép thử "chỉ một vũ khí". |
+| **GỌI TRÙM** | 8 nút, gọi đích danh từng con, máu tính theo màn hiện tại. Kèm `GIẾT TRÙM ĐANG CÓ` và `XOÁ SẠCH QUÁI`. |
+| **ĐỒNG HỒ ĐO** | Góc trên bên trái: sát thương/giây và kill/giây, vừa có số 2 giây gần nhất vừa có trung bình từ lúc đặt lại. Tự đặt lại mỗi khi đổi vũ khí / ấn ký / trang bị / vào map test. |
+
+**Quy trình so sánh hai vũ khí:** vào MAP TEST cùng một màn → `XOÁ HẾT` trang bị →
+bật `BẤT TỬ` → chọn vũ khí A, đứng yên ~30 giây, ghi số **TB** → đổi sang vũ khí B,
+đợi 30 giây, ghi số TB. Chỉ so số TB với nhau, đừng so số 2 giây (nó nhảy rất mạnh).
+
+### Móc nối trong game.js — mặc định TẮT, không dùng bảng debug thì game chạy y như cũ
+- `G.dbgLockWave` (0 = tắt) — MAP TEST: khoá số màn, `waveTime` luôn bị đặt lại nên
+  không sang màn và không tự gọi trùm. `endWave()` thoát sớm khi cờ này bật.
+- `G.dbgGod` — `hurtPlayer()` thoát ngay.
+- `G.startBoss(idx)` — `idx` bỏ trống thì chọn theo màn như cũ.
+- `G.start()` luôn đặt `dbgLockWave = 0` → ván mới luôn thoát MAP TEST.
+
+Mọi thứ khác (chặn lên cấp, đồng hồ đo, đồng hồ `∞ TEST`, ESC đóng bảng trước)
+đều làm bằng cách **bọc hàm của `UI` từ trong debug.js**, không sửa `ui.js`.
 
 ### Điều khiển (3 cách cùng lúc)
 - **Chuột**: giữ chuột trái → chạy tới con trỏ (có vòng ngắm). Chuột phải = lướt.
 - **Ngón tay**: chạm & kéo bất kỳ đâu → cần điều khiển ảo hiện tại chỗ chạm.
 - **Bàn phím**: WASD / mũi tên. Space/Shift = lướt. ESC = tạm dừng. M = tắt tiếng.
+- **F2** = bảng debug (mục 2B).
 
 ---
 
@@ -609,6 +644,10 @@ C:\Temp\nhwin\NeonHorde.exe -nhsmoke -nhduration 75 -nhshot C:\Temp\shot.png `
   bệnh "không thể thua" bằng trần hồi máu + đường cong độ khó dốc lên từ màn 11.
   Đo lại toàn bộ 10 vũ khí × 2 dạng bằng bàn đo đã sửa · bot thả vào màn 12/20/30/35/40/45
   · 0 lỗi, 0 NaN. Đã build lại `dist/`.
+- **Phiên 5 — BẢNG DEBUG** (`web/js/debug.js`, mục 2B): người dùng tự căn chỉnh được từng
+  vũ khí ngay trong game. Đã chạy thử: chọn vũ khí đơn lẻ · ấn ký tầng 4 · map test màn 25/30
+  không tự gọi trùm suốt 60 giây · gọi và giết trùm rồi quay lại map test · thoát map test ·
+  ván thường vẫn đi đúng tới trùm màn 5 · 0 lỗi. Bản `dist/` đã có.
 - Bản Unity: **đã biên dịch sạch cả hai lần** — Editor tự dựng lúc 23:48:13 (0 `error CS`,
   0 exception, 0 NaN trong `Editor.log`, có vào Play mode), và đợt port 8 trùm được
   kiểm tra kiểu lại lúc 01:16 (xem thủ thuật bên dưới).

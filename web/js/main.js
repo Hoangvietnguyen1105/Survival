@@ -6,6 +6,7 @@
   G.init(document.getElementById('game'));
   Input.init();
   UI.init();
+  Dbg.init();          // bảng debug (nút 🔧 cạnh nút tạm dừng, hoặc F2)
 
   /* nướng sẵn toàn bộ sprite ngay ở menu để trong trận không bị khựng */
   Art.warmAll();

@@ -41,6 +41,7 @@
     </div>
 
     <button id="pauseBtn" class="icon-btn" aria-label="Tạm dừng">II</button>
+    <button id="dbgBtn" class="icon-btn" aria-label="Bảng debug" title="Bảng debug (F2)">🔧</button>
     <div id="bossBarWrap" class="hidden">
       <div class="boss-name" id="bossName">TRÙM</div>
       <div class="boss-bar"><div class="fill" id="bossFill"></div></div>
@@ -117,6 +118,18 @@
     </div>
   </div>
 
+  <!-- ================= BẢNG DEBUG ================= -->
+  <div id="debug" class="screen hidden">
+    <div class="dbg-panel">
+      <div class="dbg-head">
+        <h2 class="panel-title small">BẢNG DEBUG</h2>
+        <button id="dbgClose" class="icon-btn" aria-label="Đóng">✕</button>
+      </div>
+      <div id="dbgNow" class="dbg-now"></div>
+      <div id="dbgBody" class="dbg-body"></div>
+    </div>
+  </div>
+
   <!-- ================= GAME OVER ================= -->
   <div id="gameover" class="screen hidden">
     <h2 class="panel-title" id="goTitle">BẠN ĐÃ GỤC NGÃ</h2>
@@ -140,6 +153,7 @@
 <script src="js/entities.js"></script>
 <script src="js/game.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/debug.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
