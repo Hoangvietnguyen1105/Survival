@@ -1,7 +1,7 @@
 {
-  "name": "NEON HORDE",
-  "short_name": "Neon Horde",
-  "description": "Roguelike survivor - sống sót giữa bầy quái.",
+  "name": "NEON KITCHEN",
+  "short_name": "Neon Kitchen",
+  "description": "Roguelike survivor - chuột đầu bếp chống lại binh đoàn đồ ăn.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",

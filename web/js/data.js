@@ -1,36 +1,37 @@
 /* ============ NEON HORDE — game data: characters, weapons, passives, enemies ============ */
 'use strict';
 
-/* ===================== CHARACTERS ===================== */
+/* ===================== NHÂN VẬT — 5 CHÚ CHUỘT ĐẦU BẾP =====================
+   Chỉ số y hệt bản gốc, chỉ đổi tên và lời thoại cho khớp chủ đề bếp. */
 const CHARACTERS = [
   {
-    id: 'guard', name: 'VỆ BINH', role: 'TANK', sprite: 'ch_guard', color: '#ff8a3c',
+    id: 'guard', name: 'BẾP TRƯỞNG', role: 'CHỊU ĐÒN', sprite: 'ch_guard', color: '#ff8a3c',
     weapon: 'blade',
-    desc: 'Thân thể thép nguội. Chậm mà chắc.',
+    desc: 'Ba mươi năm đứng bếp. Dầu bắn vào mặt cũng không nhíu mắt.',
     mods: { maxHp: +45, armor: +3, moveSpeed: -.08, area: +.1 }
   },
   {
-    id: 'ranger', name: 'XẠ THỦ', role: 'DPS', sprite: 'ch_ranger', color: '#25f4ee',
+    id: 'ranger', name: 'THỢ KEM', role: 'SÁT THƯƠNG', sprite: 'ch_ranger', color: '#25f4ee',
     weapon: 'pistol',
-    desc: 'Bắn nhanh như chớp, tay không bao giờ run.',
+    desc: 'Bắt bông nhanh tới mức không ai thấy tay nó động.',
     mods: { haste: +.20, pickup: +30, moveSpeed: +.04 }
   },
   {
-    id: 'mage', name: 'PHÁP SƯ', role: 'AOE', sprite: 'ch_mage', color: '#9d6bff',
+    id: 'mage', name: 'THỢ LÀM BÁNH', role: 'DIỆN RỘNG', sprite: 'ch_mage', color: '#9d6bff',
     weapon: 'lightning',
-    desc: 'Gọi sấm sét. Mong manh nhưng huỷ diệt.',
+    desc: 'Cái đánh trứng trong tay nó phát ra tia lửa. Mong manh mà đáng sợ.',
     mods: { damage: +.20, area: +.18, maxHp: -18 }
   },
   {
-    id: 'assassin', name: 'SÁT THỦ', role: 'CRIT', sprite: 'ch_assassin', color: '#ff2e88',
+    id: 'assassin', name: 'THỢ SASHIMI', role: 'CHÍ MẠNG', sprite: 'ch_assassin', color: '#ff2e88',
     weapon: 'boomerang',
-    desc: 'Một nhát chí mạng đáng giá mười nhát thường.',
+    desc: 'Một nhát đúng thớ thịt đáng giá mười nhát bừa.',
     mods: { crit: +.18, critDmg: +.3, moveSpeed: +.13, maxHp: -22 }
   },
   {
-    id: 'engineer', name: 'KỸ SƯ', role: 'HỖ TRỢ', sprite: 'ch_engineer', color: '#b6ff3a',
+    id: 'engineer', name: 'THỢ NƯỚNG', role: 'HỖ TRỢ', sprite: 'ch_engineer', color: '#b6ff3a',
     weapon: 'bomb',
-    desc: 'Thêm một quả đạn cho mọi thứ. Càng đông càng vui.',
+    desc: 'Cái gì cũng cho thêm một suất. Càng đông càng vui.',
     mods: { proj: +1, xpGain: +.15, regen: +.5 }
   }
 ];
@@ -51,17 +52,25 @@ const WEAPONS = {
 
   /* ---------- 1. PISTOL ---------- */
   pistol: {
-    name: 'SÚNG XUNG KÍCH', color: '#25f4ee', max: 8, pairId: 'proj', evoCd: 1.0,
-    evoName: 'ĐẠN PHÂN LIỆT',
-    evoDesc: 'Viên đạn nào <em>hạ gục</em> kẻ địch sẽ <em>tách thành 2 viên con tự truy đuổi</em> — con lại tách tiếp một lần nữa, tạo phản ứng dây chuyền quét sạch màn hình.',
-    tip: 'Bắn nhanh vào kẻ địch gần nhất.',
+    name: 'SÚNG KEM', color: '#25f4ee', max: 8, pairId: 'proj', evoCd: 1.0,
+    evoName: 'KEM NỔ TUNG',
+    evoDesc: 'Viên kem nào <em>hạ gục</em> kẻ địch sẽ <em>tách thành 2 viên con tự truy đuổi</em> — con lại tách tiếp một lần nữa, tạo phản ứng dây chuyền quét sạch cả bếp.',
+    tip: 'Bắt bông kem liên tục vào món ăn gần nhất.',
     stat: lv => ({ dmg: 13.87 + lv * 1.33, cd: 0.62 - lv * 0.035, n: 1 + (lv >= 4 ? 1 : 0) + (lv >= 7 ? 1 : 0), spd: 640 }),
-    desc(lv) { const s = this.stat(lv); return `Sát thương <em>${Math.round(s.dmg)}</em> · ${s.n} viên · ${(1 / s.cd).toFixed(1)}/giây`; },
-    icon(g, r) {
-      g.strokeStyle = '#25f4ee'; g.lineWidth = 5; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(-r * .6, -r * .1); g.lineTo(r * .45, -r * .1); g.stroke();
-      g.beginPath(); g.moveTo(-r * .3, -r * .1); g.lineTo(-r * .5, r * .5); g.stroke();
-      g.fillStyle = '#eafcff'; g.beginPath(); g.arc(r * .58, -r * .1, 4.5, 0, TAU); g.fill();
+    desc(lv) { const s = this.stat(lv); return `Sát thương <em>${Math.round(s.dmg)}</em> · ${s.n} viên kem · ${(1 / s.cd).toFixed(1)}/giây`; },
+    icon(g, r) {                                  // túi bắt bông đang nhả kem
+      g.beginPath();
+      g.moveTo(-r * .62, -r * .5); g.lineTo(-r * .18, -r * .62);
+      g.lineTo(r * .3, r * .04); g.lineTo(-r * .16, r * .3);
+      g.closePath();
+      g.fillStyle = 'rgba(37,244,238,.22)'; g.fill();
+      g.strokeStyle = '#25f4ee'; g.lineWidth = 2.6; g.stroke();
+      g.strokeStyle = '#eafcff'; g.lineWidth = 3.4; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(r * .26, r * .1); g.lineTo(r * .46, r * .22); g.stroke();
+      g.fillStyle = '#fff6e0';                      // ba giọt kem bay ra
+      for (let i = 0; i < 3; i++) {
+        g.beginPath(); g.arc(r * (.56 + i * .14), r * (.3 + i * .16), r * (.13 - i * .03), 0, TAU); g.fill();
+      }
     },
     fire(G, p, w) {
       const s = this.stat(w.lv);
@@ -88,18 +97,29 @@ const WEAPONS = {
 
   /* ---------- 2. SHOTGUN ---------- */
   shotgun: {
-    name: 'SÚNG SĂN', color: '#ffc93c', max: 8, pairId: 'pow', evoCd: 1.0,
-    evoName: 'PHÁO HẠM',
-    evoDesc: 'Không còn bắn chùm: nã <em>một quả đạn pháo khổng lồ</em> bay chậm, <em>xuyên qua tất cả</em> và <em>rải một chuỗi vụ nổ</em> dọc đường đi.',
-    tip: 'Bắn chùm đạn hình nón, cực mạnh ở cự ly gần.',
+    name: 'LỌ TIÊU', color: '#ffc93c', max: 8, pairId: 'pow', evoCd: 1.0,
+    evoName: 'NỒI ÁP SUẤT',
+    evoDesc: 'Không phun tiêu nữa: nã <em>một chiếc nồi áp suất khổng lồ</em> bay chậm, <em>xuyên qua tất cả</em> và <em>rải một chuỗi vụ nổ</em> dọc đường đi.',
+    tip: 'Phun một nắm tiêu hình nón, cực rát ở cự ly gần.',
     stat: lv => ({ dmg: 10.0 + lv * 0.89, cd: 1.15 - lv * 0.055, n: 4 + Math.floor(lv * .7), spd: 560, spread: .62 }),
-    desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> viên × <em>${Math.round(s.dmg)}</em> sát thương`; },
-    icon(g, r) {
-      g.strokeStyle = '#ffc93c'; g.lineWidth = 5; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(-r * .6, r * .25); g.lineTo(r * .2, -r * .25); g.stroke();
-      g.fillStyle = '#fff2c4';
-      for (let i = -1; i <= 1; i++) {
-        g.beginPath(); g.arc(r * .5 + Math.abs(i) * 4, -r * .35 + i * r * .3, 4, 0, TAU); g.fill();
+    desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> hạt tiêu × <em>${Math.round(s.dmg)}</em> sát thương`; },
+    icon(g, r) {                                  // lọ tiêu đang rắc
+      g.save(); g.rotate(-.5);
+      g.beginPath();
+      g.moveTo(-r * .26, r * .55); g.lineTo(-r * .26, -r * .2);
+      g.quadraticCurveTo(-r * .26, -r * .46, 0, -r * .46);
+      g.quadraticCurveTo(r * .26, -r * .46, r * .26, -r * .2);
+      g.lineTo(r * .26, r * .55);
+      g.closePath();
+      g.fillStyle = 'rgba(255,201,60,.22)'; g.fill();
+      g.strokeStyle = '#ffc93c'; g.lineWidth = 2.6; g.stroke();
+      g.fillStyle = '#fff2c4';                      // nắp có lỗ
+      g.fillRect(-r * .3, -r * .62, r * .6, r * .18);
+      g.restore();
+      g.fillStyle = '#5a3a1a';                      // hạt tiêu bắn ra
+      for (let i = 0; i < 5; i++) {
+        const a = -.9 + i * .32;
+        g.beginPath(); g.arc(Math.cos(a) * r * .74, Math.sin(a) * r * .74 - r * .1, r * .07, 0, TAU); g.fill();
       }
     },
     fire(G, p, w) {
@@ -142,20 +162,25 @@ const WEAPONS = {
 
   /* ---------- 3. ORBITING BLADES ---------- */
   blade: {
-    name: 'KIẾM XOAY', color: '#25f4ee', max: 8, pairId: 'area',
-    evoName: 'THIÊN LUÂN',
-    evoDesc: '<em>Hai vòng kiếm quay ngược chiều nhau</em>, và <em>mỗi nhát chém bắn ra một sóng xung kích</em> chém lan sang kẻ địch bên cạnh.',
-    tip: 'Lưỡi kiếm bay quanh bạn, chém mọi thứ chạm vào.',
+    name: 'DAO PHAY XOAY', color: '#25f4ee', max: 8, pairId: 'area',
+    evoName: 'CỐI XAY THỊT',
+    evoDesc: '<em>Hai vòng dao quay ngược chiều nhau</em>, và <em>mỗi nhát băm bắn ra một sóng xung kích</em> băm lan sang món bên cạnh.',
+    tip: 'Dao phay bay quanh bạn, băm mọi thứ chạm vào.',
     stat: lv => ({ dmg: 17.73 + lv * 1.77, n: 2 + Math.floor(lv / 2), rot: 2.5 + lv * .12, rad: 78 + lv * 5 }),
-    desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> lưỡi · <em>${Math.round(s.dmg)}</em> sát thương/chạm`; },
-    icon(g, r) {
+    desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> lưỡi dao · <em>${Math.round(s.dmg)}</em> sát thương/chạm`; },
+    icon(g, r) {                                  // ba con dao phay bay vòng
       g.strokeStyle = '#25f4ee'; g.lineWidth = 3;
       g.beginPath(); g.arc(0, 0, r * .5, 0, TAU); g.setLineDash([5, 6]); g.stroke(); g.setLineDash([]);
-      g.fillStyle = '#eafcff';
       for (let i = 0; i < 3; i++) {
         const a = i / 3 * TAU;
-        g.save(); g.translate(Math.cos(a) * r * .5, Math.sin(a) * r * .5); g.rotate(a);
-        g.beginPath(); g.moveTo(-6, -5); g.lineTo(7, 0); g.lineTo(-6, 5); g.closePath(); g.fill();
+        g.save(); g.translate(Math.cos(a) * r * .5, Math.sin(a) * r * .5); g.rotate(a + Math.PI / 2);
+        g.fillStyle = '#eafcff';                    // lưỡi
+        g.beginPath();
+        g.moveTo(-r * .2, -r * .1); g.lineTo(r * .2, -r * .1);
+        g.lineTo(r * .2, r * .04); g.lineTo(-r * .2, r * .1);
+        g.closePath(); g.fill();
+        g.fillStyle = '#3a2a12';                    // cán
+        g.fillRect(-r * .32, -r * .05, r * .12, r * .1);
         g.restore();
       }
     },
@@ -165,18 +190,27 @@ const WEAPONS = {
 
   /* ---------- 4. CHAIN LIGHTNING ---------- */
   lightning: {
-    name: 'LÔI KÍCH', color: '#9d6bff', max: 8, pairId: 'pow', evoCd: 3.6,
-    evoName: 'LÔI VŨ',
-    evoDesc: 'Không lan nữa — <em>gọi 3 tia sét giáng thẳng từ trời</em>, thưa hơn hẳn nhưng <em>mỗi tia nặng gấp bội</em>, mỗi chỗ rơi để lại một <em>vũng điện thiêu đốt</em>.',
-    tip: 'Sét đánh kẻ địch rồi lan sang mục tiêu kế bên.',
+    name: 'MÁY ĐÁNH TRỨNG', color: '#9d6bff', max: 8, pairId: 'pow', evoCd: 3.6,
+    evoName: 'BÃO LÒ VI SÓNG',
+    evoDesc: 'Không lan nữa — <em>gọi 3 tia điện giáng thẳng từ trần bếp</em>, thưa hơn hẳn nhưng <em>mỗi tia nặng gấp bội</em>, mỗi chỗ rơi để lại một <em>vũng điện cháy khét</em>.',
+    tip: 'Điện giật một món rồi lan sang món kế bên.',
     stat: lv => ({ dmg: 25.4 + lv * 2.6, cd: 1.5 - lv * .085, chain: 2 + Math.floor(lv * .8), range: 300 }),
     desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg)}</em> sát thương · lan <em>${s.chain}</em> mục tiêu`; },
-    icon(g, r) {
-      g.fillStyle = '#c9a8ff'; g.strokeStyle = '#9d6bff'; g.lineWidth = 2;
+    icon(g, r) {                                  // cái đánh trứng toé điện
+      g.strokeStyle = '#c9a8ff'; g.lineWidth = 3.2; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(r * .1, r * .66); g.lineTo(r * .1, r * .1); g.stroke();
+      g.lineWidth = 2.6;
+      for (let i = -2; i <= 2; i++) {               // các vòng dây
+        g.beginPath();
+        g.moveTo(r * .1, r * .1);
+        g.quadraticCurveTo(r * (.1 + i * .28), -r * .3, r * .1, -r * .64);
+        g.stroke();
+      }
+      g.fillStyle = '#ffe23c';                      // tia điện
       g.beginPath();
-      g.moveTo(r * .15, -r * .65); g.lineTo(-r * .35, r * .05); g.lineTo(-r * .02, r * .05);
-      g.lineTo(-r * .18, r * .65); g.lineTo(r * .38, -r * .12); g.lineTo(r * .04, -r * .12);
-      g.closePath(); g.fill(); g.stroke();
+      g.moveTo(-r * .34, -r * .66); g.lineTo(-r * .64, -r * .18); g.lineTo(-r * .42, -r * .18);
+      g.lineTo(-r * .58, r * .3); g.lineTo(-r * .18, -r * .3); g.lineTo(-r * .4, -r * .3);
+      g.closePath(); g.fill();
     },
     fire(G, p, w) {
       const s = this.stat(w.lv);
@@ -198,18 +232,25 @@ const WEAPONS = {
 
   /* ---------- 5. BOMB ---------- */
   bomb: {
-    name: 'BOM RẢI', color: '#ffb02e', max: 8, pairId: 'area', evoCd: 1.75,
-    evoName: 'BOM HẠT NHÂN',
-    evoDesc: 'Vụ nổ khổng lồ văng ra <em>2 quả bom con</em>, và để lại <em>hố phóng xạ cháy 4 giây</em> ngay tại tâm.',
-    tip: 'Ném bom nổ diện rộng.',
+    name: 'BOM BỘT MÌ', color: '#ffb02e', max: 8, pairId: 'area', evoCd: 1.75,
+    evoName: 'BOM MEN NỞ',
+    evoDesc: 'Vụ nổ khổng lồ văng ra <em>2 bọc bột con</em>, và để lại <em>hố bột cháy khét 4 giây</em> ngay tại tâm.',
+    tip: 'Ném bọc bột, nổ bung ra diện rộng.',
     stat: lv => ({ dmg: 37.59 + lv * 3.41, cd: 1.9 - lv * .1, r: 86 + lv * 7, n: 1 + Math.floor(lv / 4) }),
     desc(lv) { const s = this.stat(lv); return `Nổ <em>${Math.round(s.dmg)}</em> sát thương · bán kính <em>${Math.round(s.r)}</em>`; },
-    icon(g, r) {
-      g.fillStyle = '#3a3f5c'; g.strokeStyle = '#ffb02e'; g.lineWidth = 2.5;
-      g.beginPath(); g.arc(0, r * .12, r * .42, 0, TAU); g.fill(); g.stroke();
-      g.strokeStyle = '#ffe6b0'; g.lineWidth = 2.5;
-      g.beginPath(); g.moveTo(r * .2, -r * .24); g.quadraticCurveTo(r * .55, -r * .5, r * .35, -r * .68); g.stroke();
-      g.fillStyle = '#fff'; g.beginPath(); g.arc(r * .35, -r * .68, 3.5, 0, TAU); g.fill();
+    icon(g, r) {                                  // bọc bột mì buộc miệng, bột bay ra
+      g.beginPath();
+      g.moveTo(-r * .42, r * .58); g.lineTo(-r * .3, -r * .18);
+      g.lineTo(r * .3, -r * .18); g.lineTo(r * .42, r * .58);
+      g.closePath();
+      g.fillStyle = '#f0e2c4'; g.fill();
+      g.strokeStyle = '#ffb02e'; g.lineWidth = 2.6; g.stroke();
+      g.strokeStyle = '#c9a86b'; g.lineWidth = 2.4;  // dây buộc
+      g.beginPath(); g.moveTo(-r * .32, -r * .1); g.lineTo(r * .32, -r * .1); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.85)';         // bột bung lên
+      g.beginPath(); g.arc(-r * .1, -r * .42, r * .14, 0, TAU); g.fill();
+      g.beginPath(); g.arc(r * .18, -r * .58, r * .1, 0, TAU); g.fill();
+      g.beginPath(); g.arc(-r * .34, -r * .62, r * .08, 0, TAU); g.fill();
     },
     fire(G, p, w) {
       const s = this.stat(w.lv);
@@ -240,17 +281,30 @@ const WEAPONS = {
 
   /* ---------- 6. LASER ---------- */
   laser: {
-    name: 'TIA TỬ THẦN', color: '#ff2e88', max: 8, pairId: 'haste', evoCd: 1.35,
-    evoName: 'LĂNG KÍNH',
-    evoDesc: 'Tia laser <em>nảy 4 lần</em> giữa các kẻ địch, <em>mỗi lần nảy đổi một màu cầu vồng</em> và vẫn xuyên thấu toàn bộ.',
-    tip: 'Tia laser xuyên qua toàn bộ kẻ địch trên đường đi.',
+    name: 'ĐÈN KHÒ', color: '#ff2e88', max: 8, pairId: 'haste', evoCd: 1.35,
+    evoName: 'KHÒ CẦU VỒNG',
+    evoDesc: 'Lửa khò <em>nảy 4 lần</em> giữa các món ăn, <em>mỗi lần nảy đổi một màu cầu vồng</em> và vẫn xuyên thấu toàn bộ.',
+    tip: 'Lửa khò xuyên qua toàn bộ món ăn trên đường đi.',
     stat: lv => ({ dmg: 33.84 + lv * 4.16, cd: 1.75 - lv * .1, w: 12 + lv * 2.4, len: 900 }),
-    desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg)}</em> sát thương xuyên thấu · dày <em>${Math.round(s.w)}</em>`; },
-    icon(g, r) {
-      const grd = g.createLinearGradient(-r * .7, 0, r * .7, 0);
-      grd.addColorStop(0, 'rgba(255,46,136,0)'); grd.addColorStop(.5, '#ff8ec0'); grd.addColorStop(1, 'rgba(255,46,136,0)');
-      g.fillStyle = grd; g.fillRect(-r * .75, -5, r * 1.5, 10);
-      g.fillStyle = '#fff'; g.fillRect(-r * .75, -1.6, r * 1.5, 3.2);
+    desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg)}</em> sát thương xuyên thấu · lửa dày <em>${Math.round(s.w)}</em>`; },
+    icon(g, r) {                                  // đèn khò phun lửa
+      g.beginPath();                                // bình gas
+      g.moveTo(-r * .66, r * .5); g.lineTo(-r * .66, -r * .06);
+      g.lineTo(-r * .3, -r * .06); g.lineTo(-r * .3, r * .5);
+      g.closePath();
+      g.fillStyle = 'rgba(255,46,136,.25)'; g.fill();
+      g.strokeStyle = '#ff2e88'; g.lineWidth = 2.4; g.stroke();
+      g.strokeStyle = '#ffd2e6'; g.lineWidth = r * .14; g.lineCap = 'butt';
+      g.beginPath(); g.moveTo(-r * .48, -r * .08); g.lineTo(-r * .12, -r * .34); g.stroke();
+      const grd = g.createLinearGradient(-r * .1, 0, r * .8, 0);   // ngọn lửa
+      grd.addColorStop(0, '#ffffff');
+      grd.addColorStop(.45, '#ff8ec0');
+      grd.addColorStop(1, 'rgba(255,46,136,0)');
+      g.fillStyle = grd;
+      g.beginPath();
+      g.moveTo(-r * .1, -r * .5); g.lineTo(r * .84, -r * .3);
+      g.lineTo(r * .84, -r * .16); g.lineTo(-r * .1, -r * .18);
+      g.closePath(); g.fill();
     },
     fire(G, p, w) {
       const s = this.stat(w.lv);
@@ -272,23 +326,33 @@ const WEAPONS = {
 
   /* ---------- 7. FROST NOVA ---------- */
   frost: {
-    name: 'BĂNG VỰC', color: '#6fe6ff', max: 8, pairId: 'area',
-    evoName: 'BÃO TUYẾT VĨNH CỬU',
-    evoDesc: 'Không còn từng đợt — một <em>cơn bão tuyết bám theo bạn</em> suốt màn chơi, liên tục làm chậm và gặm sát thương.',
-    tip: 'Sóng băng lan ra, gây sát thương và làm chậm.',
+    name: 'NITƠ LẠNH', color: '#6fe6ff', max: 8, pairId: 'area',
+    evoName: 'BÃO TUYẾT NITƠ',
+    evoDesc: 'Không còn từng đợt — một <em>cơn bão nitơ bám theo bạn</em> suốt màn chơi, liên tục làm chậm và gặm sát thương.',
+    tip: 'Hơi nitơ lan ra, gây sát thương và làm chậm.',
     stat: lv => ({ dmg: 15.6 + lv * 1.9, cd: 2.4 - lv * .13, r: 130 + lv * 16, slow: .35 + lv * .04, dur: 1.6 + lv * .1 }),
     desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg)}</em> sát thương · làm chậm <em>${Math.round(s.slow * 100)}%</em>`; },
-    icon(g, r) {
-      g.strokeStyle = '#6fe6ff'; g.lineWidth = 2.6; g.lineCap = 'round';
-      for (let i = 0; i < 6; i++) {
-        const a = i / 6 * TAU;
-        g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * r * .62, Math.sin(a) * r * .62); g.stroke();
-        g.beginPath();
-        g.moveTo(Math.cos(a) * r * .38, Math.sin(a) * r * .38);
-        g.lineTo(Math.cos(a + .5) * r * .52, Math.sin(a + .5) * r * .52); g.stroke();
-        g.beginPath();
-        g.moveTo(Math.cos(a) * r * .38, Math.sin(a) * r * .38);
-        g.lineTo(Math.cos(a - .5) * r * .52, Math.sin(a - .5) * r * .52); g.stroke();
+    icon(g, r) {                                  // bình nitơ toả hơi lạnh
+      g.beginPath();
+      g.moveTo(-r * .3, r * .58); g.lineTo(-r * .3, -r * .3);
+      g.quadraticCurveTo(-r * .3, -r * .52, 0, -r * .52);
+      g.quadraticCurveTo(r * .3, -r * .52, r * .3, -r * .3);
+      g.lineTo(r * .3, r * .58);
+      g.closePath();
+      g.fillStyle = 'rgba(111,230,255,.22)'; g.fill();
+      g.strokeStyle = '#6fe6ff'; g.lineWidth = 2.6; g.stroke();
+      g.fillStyle = '#d6f6ff'; g.fillRect(-r * .12, -r * .68, r * .24, r * .18);
+      g.strokeStyle = '#eafcff'; g.lineWidth = 2.2; g.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {                 // bông tuyết toả ra
+        const a = -1.9 + i * .5;
+        const x = Math.cos(a) * r * .72, y = Math.sin(a) * r * .72;
+        for (let k = 0; k < 3; k++) {
+          const b = k / 3 * Math.PI;
+          g.beginPath();
+          g.moveTo(x - Math.cos(b) * r * .12, y - Math.sin(b) * r * .12);
+          g.lineTo(x + Math.cos(b) * r * .12, y + Math.sin(b) * r * .12);
+          g.stroke();
+        }
       }
     },
     fire(G, p, w) {
@@ -325,19 +389,23 @@ const WEAPONS = {
 
   /* ---------- 8. HOMING MISSILES ---------- */
   missile: {
-    name: 'TÊN LỬA TẦM NHIỆT', color: '#ff2e88', max: 8, pairId: 'proj', evoCd: 2.1,
-    evoName: 'HOẢ TIỄN OANH TẠC',
-    evoDesc: 'Phóng <em>loạt 4 quả</em> bay vòng cung lên trời rồi <em>rơi rải khắp màn hình</em>, mỗi quả nổ diện rộng.',
-    tip: 'Tên lửa tự truy đuổi kẻ địch.',
+    name: 'XÚC XÍCH TẦM NHIỆT', color: '#ff2e88', max: 8, pairId: 'proj', evoCd: 2.1,
+    evoName: 'MƯA XÚC XÍCH',
+    evoDesc: 'Phóng <em>loạt 4 cái</em> bay vòng cung lên trần rồi <em>rơi rải khắp bếp</em>, mỗi cái nổ diện rộng.',
+    tip: 'Xúc xích nóng tự truy đuổi món ăn.',
     stat: lv => ({ dmg: 27.79 + lv * 2.71, cd: 1.5 - lv * .08, n: 1 + Math.floor(lv / 2), turn: 4.5 }),
-    desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> tên lửa × <em>${Math.round(s.dmg)}</em> sát thương`; },
-    icon(g, r) {
+    desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> xúc xích × <em>${Math.round(s.dmg)}</em> sát thương`; },
+    icon(g, r) {                                  // xúc xích có vệt lửa đẩy
       g.save(); g.rotate(-.6);
-      g.fillStyle = '#ffd2e6'; g.strokeStyle = '#ff2e88'; g.lineWidth = 2;
-      g.beginPath(); g.moveTo(r * .62, 0); g.lineTo(-r * .3, -r * .26); g.lineTo(-r * .12, 0); g.lineTo(-r * .3, r * .26);
-      g.closePath(); g.fill(); g.stroke();
-      g.strokeStyle = '#ffb02e'; g.lineWidth = 3; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(-r * .3, 0); g.lineTo(-r * .72, 0); g.stroke();
+      g.beginPath(); g.ellipse(r * .12, 0, r * .5, r * .24, 0, 0, TAU);
+      g.fillStyle = '#ff8f6b'; g.fill();
+      g.strokeStyle = '#ff2e88'; g.lineWidth = 2.4; g.stroke();
+      g.strokeStyle = 'rgba(120,36,14,.7)'; g.lineWidth = 2;    // vết nướng
+      for (let i = -1; i <= 1; i++) {
+        g.beginPath(); g.moveTo(r * (.12 + i * .22), -r * .2); g.lineTo(r * (.2 + i * .22), r * .2); g.stroke();
+      }
+      g.strokeStyle = '#ffb02e'; g.lineWidth = 4; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(-r * .42, 0); g.lineTo(-r * .82, 0); g.stroke();
       g.restore();
     },
     fire(G, p, w) {
@@ -382,19 +450,21 @@ const WEAPONS = {
 
   /* ---------- 9. AURA ---------- */
   aura: {
-    name: 'HÀO QUANG HUỶ DIỆT', color: '#b6ff3a', max: 8, pairId: 'area',
-    evoName: 'LÒ PHẢN ỨNG',
-    evoDesc: 'Hào quang <em>tự nở to theo số kẻ địch đứng bên trong</em>, và cứ mỗi nhịp lại <em>phóng tia điện tới tất cả</em> chúng.',
-    tip: 'Vùng năng lượng quanh bạn liên tục gây sát thương.',
+    name: 'LÒ NƯỚNG ĐỎ LỬA', color: '#b6ff3a', max: 8, pairId: 'area',
+    evoName: 'LÒ QUÁ TẢI',
+    evoDesc: 'Lò <em>tự nở to theo số món đứng bên trong</em>, và cứ mỗi nhịp lại <em>phóng tia lửa tới tất cả</em> chúng.',
+    tip: 'Vùng nhiệt quanh bạn liên tục thiêu món ăn.',
     stat: lv => ({ dmg: 11.53 + lv * 1.27, cd: .5, r: 92 + lv * 11 }),
     desc(lv) { const s = this.stat(lv); return `<em>${Math.round(s.dmg * 2)}</em> sát thương/giây · bán kính <em>${Math.round(s.r)}</em>`; },
-    icon(g, r) {
+    icon(g, r) {                                  // vòng nhiệt lò nướng
       g.strokeStyle = '#b6ff3a'; g.lineWidth = 2.4;
-      g.beginPath(); g.arc(0, 0, r * .66, 0, TAU); g.stroke();
-      g.globalAlpha = .55;
-      g.beginPath(); g.arc(0, 0, r * .45, 0, TAU); g.stroke();
-      g.globalAlpha = 1;
-      g.fillStyle = '#e6ffb0'; g.beginPath(); g.arc(0, 0, r * .2, 0, TAU); g.fill();
+      g.beginPath(); g.arc(0, 0, r * .68, 0, TAU); g.stroke();
+      g.strokeStyle = '#ff8a3c'; g.lineWidth = r * .12; g.lineCap = 'round';
+      for (let i = 0; i < 3; i++) {                 // dây điện trở uốn khúc
+        const rr = r * (.2 + i * .18);
+        g.beginPath(); g.arc(0, 0, rr, .3, TAU - .3); g.stroke();
+      }
+      g.fillStyle = '#ffe23c'; g.beginPath(); g.arc(0, 0, r * .1, 0, TAU); g.fill();
     },
     fire(G, p, w) {
       const s = this.stat(w.lv);
@@ -430,16 +500,22 @@ const WEAPONS = {
 
   /* ---------- 10. BOOMERANG ---------- */
   boomerang: {
-    name: 'PHI TIÊU HỒI', color: '#eafcff', max: 8, pairId: 'crit', evoCd: 1.25,
-    evoName: 'LƯỠI HÁI TỬ THẦN',
-    evoDesc: 'Phi tiêu <em>bay mãi không quay về</em>, và <em>mỗi lần chém trúng lại to thêm và mạnh thêm</em> — càng đông càng khủng khiếp.',
-    tip: 'Phi tiêu bay đi rồi quay về, xuyên nhiều kẻ địch.',
+    name: 'ĐĨA BAY', color: '#eafcff', max: 8, pairId: 'crit', evoCd: 1.25,
+    evoName: 'ĐĨA BAY VÔ TẬN',
+    evoDesc: 'Đĩa <em>bay mãi không quay về</em>, và <em>mỗi lần chém trúng lại to thêm và mạnh thêm</em> — càng đông càng khủng khiếp.',
+    tip: 'Phóng đĩa bay đi rồi quay về, xuyên nhiều món ăn.',
     stat: lv => ({ dmg: 20.37 + lv * 2.13, cd: 1.25 - lv * .06, n: 1 + Math.floor(lv / 3), range: 300 + lv * 16 }),
-    desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> phi tiêu × <em>${Math.round(s.dmg)}</em> · xuyên thấu`; },
-    icon(g, r) {
-      g.fillStyle = '#eafcff'; g.strokeStyle = '#8ad8ff'; g.lineWidth = 1.6;
-      star(g, 4, r * .66, r * .2, .3); g.fill(); g.stroke();
-      g.fillStyle = '#0a0f1e'; g.beginPath(); g.arc(0, 0, r * .13, 0, TAU); g.fill();
+    desc(lv) { const s = this.stat(lv); return `<em>${s.n}</em> đĩa × <em>${Math.round(s.dmg)}</em> · xuyên thấu`; },
+    icon(g, r) {                                  // cái đĩa đang bay, có vệt gió
+      g.beginPath(); g.ellipse(0, 0, r * .66, r * .5, 0, 0, TAU);
+      g.fillStyle = 'rgba(234,252,255,.9)'; g.fill();
+      g.strokeStyle = '#8ad8ff'; g.lineWidth = 2.2; g.stroke();
+      g.beginPath(); g.ellipse(0, 0, r * .38, r * .28, 0, 0, TAU);
+      g.strokeStyle = 'rgba(120,190,230,.8)'; g.lineWidth = 1.8; g.stroke();
+      g.strokeStyle = 'rgba(234,252,255,.55)'; g.lineWidth = 2.4; g.lineCap = 'round';
+      for (let i = -1; i <= 1; i++) {
+        g.beginPath(); g.moveTo(-r * .78, i * r * .26); g.lineTo(-r * .96, i * r * .26); g.stroke();
+      }
     },
     fire(G, p, w) {
       const s = this.stat(w.lv);
@@ -465,28 +541,41 @@ const WEAPONS = {
   }
 };
 
-/* ===================== PASSIVES ===================== */
+/* ===================== TRANG BỊ BỊ ĐỘNG — ĐỒ NGHỀ TRONG BẾP =====================
+   Số liệu (`desc`, `apply`, `max`, `color`) y hệt bản gốc. Chỉ đổi TÊN và BIỂU TƯỢNG. */
 const PASSIVES = {
   pow: {
-    name: 'NGỌC CƯỜNG LỰC', color: '#ff4d5e', max: 5,
+    name: 'ỚT HIỂM', color: '#ff4d5e', max: 5,
     desc: lv => `Sát thương <em>+${lv * 12}%</em>`,
     apply: (s, lv) => { s.damage += .12 * lv; },
-    icon(g, r) { star(g, 4, r * .62, r * .24); g.fillStyle = '#ff8a95'; g.fill(); g.strokeStyle = '#ff4d5e'; g.lineWidth = 2.4; g.stroke(); }
+    icon(g, r) {                                    // quả ớt + cuống xanh
+      g.beginPath();
+      g.moveTo(r * .1, -r * .3);
+      g.bezierCurveTo(r * .55, -r * .05, r * .35, r * .6, -r * .05, r * .6);
+      g.bezierCurveTo(-r * .3, r * .6, -r * .3, r * .1, r * .1, -r * .3);
+      g.fillStyle = '#ff4d5e'; g.fill();
+      g.strokeStyle = '#ff8a95'; g.lineWidth = 2; g.stroke();
+      g.strokeStyle = '#3affa0'; g.lineWidth = 3.4; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(r * .08, -r * .28); g.lineTo(-r * .18, -r * .62); g.stroke();
+    }
   },
   haste: {
-    name: 'ĐỒNG HỒ CÁT', color: '#25f4ee', max: 5,
+    name: 'ĐỒNG HỒ BẾP', color: '#25f4ee', max: 5,
     desc: lv => `Tốc độ tấn công <em>+${lv * 11}%</em>`,
     apply: (s, lv) => { s.haste += .11 * lv; },
-    icon(g, r) {
-      g.strokeStyle = '#25f4ee'; g.lineWidth = 3; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(-r * .42, -r * .55); g.lineTo(r * .42, -r * .55);
-      g.lineTo(-r * .42, r * .55); g.lineTo(r * .42, r * .55); g.closePath(); g.stroke();
-      g.fillStyle = 'rgba(37,244,238,.5)';
-      g.beginPath(); g.moveTo(-r * .3, r * .48); g.lineTo(r * .3, r * .48); g.lineTo(0, r * .1); g.closePath(); g.fill();
+    icon(g, r) {                                    // đồng hồ hẹn giờ vặn tay
+      g.strokeStyle = '#25f4ee'; g.lineWidth = 2.8;
+      g.beginPath(); g.arc(0, r * .08, r * .55, 0, TAU); g.stroke();
+      g.fillStyle = 'rgba(37,244,238,.2)'; g.fill();
+      g.lineWidth = 3; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(0, r * .08); g.lineTo(0, -r * .3); g.stroke();
+      g.beginPath(); g.moveTo(0, r * .08); g.lineTo(r * .3, r * .2); g.stroke();
+      g.lineWidth = 4;                              // núm vặn trên đỉnh
+      g.beginPath(); g.moveTo(-r * .16, -r * .58); g.lineTo(r * .16, -r * .58); g.stroke();
     }
   },
   speed: {
-    name: 'GIÀY GIÓ', color: '#b6ff3a', max: 5,
+    name: 'GIÀY CHỐNG TRƯỢT', color: '#b6ff3a', max: 5,
     desc: lv => `Tốc độ di chuyển <em>+${lv * 8}%</em>`,
     apply: (s, lv) => { s.moveSpeed += .08 * lv; },
     icon(g, r) {
@@ -498,117 +587,144 @@ const PASSIVES = {
     }
   },
   hp: {
-    name: 'TIM THÉP', color: '#ff4d6b', max: 5,
+    name: 'Ổ BÁNH MÌ', color: '#ff4d6b', max: 5,
     desc: lv => `Máu tối đa <em>+${lv * 22}</em>`,
     apply: (s, lv) => { s.maxHp += 22 * lv; },
-    icon(g, r) {
-      const s = r * .1;
-      g.beginPath(); g.moveTo(0, r * .55);
-      g.bezierCurveTo(-9 * s, r * .1, -7 * s, -r * .62, 0, -r * .2);
-      g.bezierCurveTo(7 * s, -r * .62, 9 * s, r * .1, 0, r * .55);
-      g.fillStyle = '#ff4d6b'; g.fill(); g.strokeStyle = '#ffd0d8'; g.lineWidth = 2; g.stroke();
+    icon(g, r) {                                    // ổ bánh mì nứt vỏ
+      g.beginPath();
+      g.moveTo(-r * .6, r * .38);
+      g.quadraticCurveTo(-r * .6, -r * .5, 0, -r * .5);
+      g.quadraticCurveTo(r * .6, -r * .5, r * .6, r * .38);
+      g.closePath();
+      g.fillStyle = '#e8a05c'; g.fill();
+      g.strokeStyle = '#ff4d6b'; g.lineWidth = 2.4; g.stroke();
+      g.strokeStyle = '#ffd0a8'; g.lineWidth = 2.4; g.lineCap = 'round';
+      for (let i = -1; i <= 1; i++) {
+        g.beginPath(); g.moveTo(i * r * .3 - r * .1, -r * .3); g.lineTo(i * r * .3 + r * .12, r * .18); g.stroke();
+      }
     }
   },
   armor: {
-    name: 'GIÁP RỒNG', color: '#8fa8ff', max: 5,
+    name: 'BAO TAY LÒ', color: '#8fa8ff', max: 5,
     desc: lv => `Giáp <em>+${lv * 2}</em> (giảm sát thương nhận)`,
     apply: (s, lv) => { s.armor += 2 * lv; },
-    icon(g, r) {
+    icon(g, r) {                                    // bao tay bắc nồi
       g.beginPath();
-      g.moveTo(0, -r * .62); g.lineTo(r * .5, -r * .34); g.lineTo(r * .5, r * .16);
-      g.quadraticCurveTo(r * .5, r * .56, 0, r * .66);
-      g.quadraticCurveTo(-r * .5, r * .56, -r * .5, r * .16);
-      g.lineTo(-r * .5, -r * .34); g.closePath();
+      g.moveTo(-r * .34, r * .62); g.lineTo(-r * .34, -r * .1);
+      g.quadraticCurveTo(-r * .34, -r * .62, r * .06, -r * .62);
+      g.quadraticCurveTo(r * .4, -r * .62, r * .4, -r * .2);
+      g.lineTo(r * .4, r * .62);
+      g.closePath();
       g.fillStyle = 'rgba(143,168,255,.35)'; g.fill();
       g.strokeStyle = '#8fa8ff'; g.lineWidth = 2.6; g.stroke();
+      g.beginPath();                                // ngón cái
+      g.moveTo(-r * .34, r * .1); g.quadraticCurveTo(-r * .7, r * .1, -r * .62, r * .5); g.stroke();
+      g.strokeStyle = '#d6e0ff'; g.lineWidth = 2.2;  // viền bo
+      g.beginPath(); g.moveTo(-r * .34, r * .44); g.lineTo(r * .4, r * .44); g.stroke();
     }
   },
   magnet: {
-    name: 'NAM CHÂM', color: '#4de1ff', max: 5,
+    name: 'CÁI VÁ LỚN', color: '#4de1ff', max: 5,
     desc: lv => `Tầm hút vật phẩm <em>+${lv * 40}</em>`,
     apply: (s, lv) => { s.pickup += 40 * lv; },
-    icon(g, r) {
-      g.strokeStyle = '#4de1ff'; g.lineWidth = r * .26; g.lineCap = 'butt';
-      g.beginPath(); g.arc(0, r * .12, r * .42, Math.PI, 0); g.stroke();
-      g.strokeStyle = '#ff4d5e';
-      g.beginPath(); g.moveTo(-r * .42, r * .12); g.lineTo(-r * .42, r * .46); g.stroke();
-      g.beginPath(); g.moveTo(r * .42, r * .12); g.lineTo(r * .42, r * .46); g.stroke();
+    icon(g, r) {                                    // cái vá múc canh
+      g.beginPath(); g.arc(0, r * .24, r * .38, 0, Math.PI);
+      g.fillStyle = 'rgba(77,225,255,.35)'; g.fill();
+      g.strokeStyle = '#4de1ff'; g.lineWidth = 2.8; g.stroke();
+      g.lineWidth = r * .16; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(0, r * .24); g.lineTo(0, -r * .5); g.stroke();
+      g.strokeStyle = '#ff4d5e'; g.lineWidth = r * .12;
+      g.beginPath(); g.moveTo(-r * .16, -r * .54); g.lineTo(r * .16, -r * .54); g.stroke();
     }
   },
   crit: {
-    name: 'KÍNH SÁT THỦ', color: '#ffc93c', max: 5,
+    name: 'DAO MÀI SẮC', color: '#ffc93c', max: 5,
     desc: lv => `Tỉ lệ chí mạng <em>+${lv * 8}%</em>`,
     apply: (s, lv) => { s.crit += .08 * lv; },
-    icon(g, r) {
-      g.strokeStyle = '#ffc93c'; g.lineWidth = 2.6;
-      g.beginPath(); g.arc(0, 0, r * .58, 0, TAU); g.stroke();
-      g.beginPath(); g.arc(0, 0, r * .24, 0, TAU); g.stroke();
-      g.lineWidth = 2;
-      g.beginPath(); g.moveTo(-r * .78, 0); g.lineTo(-r * .34, 0);
-      g.moveTo(r * .34, 0); g.lineTo(r * .78, 0);
-      g.moveTo(0, -r * .78); g.lineTo(0, -r * .34);
-      g.moveTo(0, r * .34); g.lineTo(0, r * .78); g.stroke();
+    icon(g, r) {                                    // dao gọt + tia sáng lưỡi
+      g.beginPath();
+      g.moveTo(-r * .55, r * .3); g.lineTo(r * .3, -r * .55);
+      g.lineTo(r * .5, -r * .3); g.lineTo(-r * .3, r * .5);
+      g.closePath();
+      g.fillStyle = 'rgba(255,240,196,.9)'; g.fill();
+      g.strokeStyle = '#ffc93c'; g.lineWidth = 2.2; g.stroke();
+      g.fillStyle = '#3a2a12';                       // cán dao
+      g.save(); g.rotate(-Math.PI / 4);
+      g.fillRect(-r * .82, -r * .1, r * .3, r * .2);
+      g.restore();
+      g.strokeStyle = '#fff'; g.lineWidth = 2; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(r * .34, -r * .68); g.lineTo(r * .52, -r * .78); g.stroke();
     }
   },
   critd: {
-    name: 'MÓNG VUỐT', color: '#ff8a3c', max: 5,
+    name: 'BÚA DẦN THỊT', color: '#ff8a3c', max: 5,
     desc: lv => `Sát thương chí mạng <em>+${lv * 30}%</em>`,
     apply: (s, lv) => { s.critDmg += .3 * lv; },
-    icon(g, r) {
-      g.strokeStyle = '#ff8a3c'; g.lineWidth = 4; g.lineCap = 'round';
-      for (let i = -1; i <= 1; i++) {
+    icon(g, r) {                                    // búa dần thịt mặt gai
+      g.fillStyle = 'rgba(255,138,60,.3)'; g.strokeStyle = '#ff8a3c'; g.lineWidth = 2.6;
+      g.beginPath(); g.rect(-r * .55, -r * .6, r * 1.1, r * .5); g.fill(); g.stroke();
+      g.fillStyle = '#ffd9a8';
+      for (let x = -1; x <= 1; x++) {
+        for (let y = 0; y <= 1; y++) {
+          g.beginPath(); g.arc(x * r * .3, -r * .48 + y * r * .24, r * .07, 0, TAU); g.fill();
+        }
+      }
+      g.strokeStyle = '#ff8a3c'; g.lineWidth = r * .18; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(0, -r * .1); g.lineTo(0, r * .62); g.stroke();
+    }
+  },
+  regen: {
+    name: 'NƯỚC DÙNG HẦM', color: '#3affa0', max: 5,
+    desc: lv => `Hồi <em>${(lv * .9).toFixed(1)}</em> máu mỗi giây`,
+    apply: (s, lv) => { s.regen += .9 * lv; },
+    icon(g, r) {                                    // tô nước dùng bốc khói
+      g.beginPath(); g.arc(0, r * .1, r * .55, 0, Math.PI);
+      g.fillStyle = 'rgba(58,255,160,.3)'; g.fill();
+      g.strokeStyle = '#3affa0'; g.lineWidth = 2.8; g.stroke();
+      g.beginPath(); g.moveTo(-r * .62, r * .1); g.lineTo(r * .62, r * .1); g.stroke();
+      g.strokeStyle = '#bfffe0'; g.lineWidth = 2.2; g.lineCap = 'round';
+      for (let i = -1; i <= 1; i++) {               // hơi nóng
         g.beginPath();
-        g.moveTo(-r * .5 + i * r * .3, -r * .6);
-        g.quadraticCurveTo(r * .1 + i * r * .3, 0, -r * .2 + i * r * .3, r * .62);
+        g.moveTo(i * r * .28, -r * .16);
+        g.quadraticCurveTo(i * r * .28 + r * .16, -r * .38, i * r * .28, -r * .62);
         g.stroke();
       }
     }
   },
-  regen: {
-    name: 'BÙA HỒI SINH', color: '#3affa0', max: 5,
-    desc: lv => `Hồi <em>${(lv * .9).toFixed(1)}</em> máu mỗi giây`,
-    apply: (s, lv) => { s.regen += .9 * lv; },
-    icon(g, r) {
-      g.fillStyle = '#3affa0';
-      g.fillRect(-r * .16, -r * .58, r * .32, r * 1.16);
-      g.fillRect(-r * .58, -r * .16, r * 1.16, r * .32);
-      g.strokeStyle = '#bfffe0'; g.lineWidth = 1.6;
-      g.strokeRect(-r * .16, -r * .58, r * .32, r * 1.16);
-    }
-  },
   area: {
-    name: 'ĐÁ MỞ RỘNG', color: '#9d6bff', max: 5,
+    name: 'CHẢO ĐẠI', color: '#9d6bff', max: 5,
     desc: lv => `Phạm vi kỹ năng <em>+${lv * 14}%</em>`,
     apply: (s, lv) => { s.area += .14 * lv; },
-    icon(g, r) {
-      g.strokeStyle = '#9d6bff'; g.lineWidth = 2.4;
-      g.beginPath(); g.arc(0, 0, r * .3, 0, TAU); g.stroke();
-      g.globalAlpha = .6; g.beginPath(); g.arc(0, 0, r * .52, 0, TAU); g.stroke();
-      g.globalAlpha = .3; g.beginPath(); g.arc(0, 0, r * .72, 0, TAU); g.stroke();
-      g.globalAlpha = 1;
-      g.fillStyle = '#d9c4ff'; g.beginPath(); g.arc(0, 0, r * .13, 0, TAU); g.fill();
+    icon(g, r) {                                    // chảo to nhìn từ trên, có cán
+      g.beginPath(); g.arc(-r * .08, 0, r * .5, 0, TAU);
+      g.fillStyle = 'rgba(157,107,255,.28)'; g.fill();
+      g.strokeStyle = '#9d6bff'; g.lineWidth = 2.8; g.stroke();
+      g.beginPath(); g.arc(-r * .08, 0, r * .32, 0, TAU);
+      g.strokeStyle = 'rgba(217,196,255,.7)'; g.lineWidth = 2; g.stroke();
+      g.strokeStyle = '#9d6bff'; g.lineWidth = r * .16; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(r * .4, 0); g.lineTo(r * .86, 0); g.stroke();
     }
   },
   proj: {
-    name: 'ỐNG ĐẠN PHỤ', color: '#ffc93c', max: 3,
+    name: 'THÊM MỘT SUẤT', color: '#ffc93c', max: 3,
     desc: lv => `Tất cả vũ khí <em>+${lv}</em> đạn`,
     apply: (s, lv) => { s.proj += lv; },
-    icon(g, r) {
-      g.fillStyle = '#ffc93c'; g.strokeStyle = '#a86e00'; g.lineWidth = 1.4;
+    icon(g, r) {                                    // ba cái đĩa xếp chồng
+      g.strokeStyle = '#ffc93c'; g.lineWidth = 2.4;
       for (let i = -1; i <= 1; i++) {
-        g.save(); g.translate(i * r * .38, 0);
-        g.beginPath();
-        g.moveTo(0, -r * .55); g.lineTo(r * .16, -r * .3); g.lineTo(r * .16, r * .5);
-        g.lineTo(-r * .16, r * .5); g.lineTo(-r * .16, -r * .3);
-        g.closePath(); g.fill(); g.stroke(); g.restore();
+        g.beginPath(); g.ellipse(0, i * r * .3 + r * .1, r * .55 - Math.abs(i) * r * .06, r * .17, 0, 0, TAU);
+        g.fillStyle = 'rgba(255,201,60,.22)'; g.fill(); g.stroke();
       }
+      g.fillStyle = '#fff2c4'; g.font = 'bold ' + Math.round(r * .5) + 'px sans-serif';
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText('+', 0, -r * .55);
     }
   },
   lifesteal: {
-    name: 'HUYẾT ẤN', color: '#ff2e88', max: 5,
+    name: 'XỐT CÀ CHUA', color: '#ff2e88', max: 5,
     desc: lv => `Hút <em>${(lv * 1.4).toFixed(1)}%</em> sát thương thành máu`,
     apply: (s, lv) => { s.lifesteal += .014 * lv; },
-    icon(g, r) {
+    icon(g, r) {                                    // giọt xốt
       g.fillStyle = '#ff2e88';
       g.beginPath();
       g.moveTo(0, -r * .62);
@@ -620,29 +736,38 @@ const PASSIVES = {
     }
   },
   dodge: {
-    name: 'ÁO CHOÀNG BÓNG', color: '#8fa8ff', max: 5,
+    name: 'TẠP DỀ TRƠN', color: '#8fa8ff', max: 5,
     desc: lv => `Né tránh <em>+${lv * 6}%</em>`,
     apply: (s, lv) => { s.dodge += .06 * lv; },
-    icon(g, r) {
+    icon(g, r) {                                    // cái tạp dề
       g.fillStyle = 'rgba(143,168,255,.35)'; g.strokeStyle = '#8fa8ff'; g.lineWidth = 2.4;
       g.beginPath();
-      g.moveTo(0, -r * .6); g.quadraticCurveTo(r * .62, -r * .2, r * .42, r * .62);
-      g.quadraticCurveTo(0, r * .3, -r * .42, r * .62);
-      g.quadraticCurveTo(-r * .62, -r * .2, 0, -r * .6);
-      g.fill(); g.stroke();
+      g.moveTo(-r * .22, -r * .5); g.lineTo(r * .22, -r * .5);
+      g.lineTo(r * .3, -r * .16); g.lineTo(r * .46, r * .58);
+      g.lineTo(-r * .46, r * .58); g.lineTo(-r * .3, -r * .16);
+      g.closePath(); g.fill(); g.stroke();
+      g.lineWidth = 2; g.lineCap = 'round';          // dây buộc cổ
+      g.beginPath(); g.moveTo(-r * .22, -r * .5); g.lineTo(-r * .5, -r * .68); g.stroke();
+      g.beginPath(); g.moveTo(r * .22, -r * .5); g.lineTo(r * .5, -r * .68); g.stroke();
     }
   },
   xp: {
-    name: 'SÁCH CỔ', color: '#25f4ee', max: 5,
+    name: 'SỔ CÔNG THỨC', color: '#25f4ee', max: 5,
     desc: lv => `Kinh nghiệm nhận được <em>+${lv * 16}%</em>`,
     apply: (s, lv) => { s.xpGain += .16 * lv; },
-    icon(g, r) {
+    icon(g, r) {                                    // quyển sổ mở
       g.fillStyle = 'rgba(37,244,238,.25)'; g.strokeStyle = '#25f4ee'; g.lineWidth = 2.2;
       g.beginPath();
       g.moveTo(-r * .55, -r * .45); g.lineTo(0, -r * .3); g.lineTo(r * .55, -r * .45);
       g.lineTo(r * .55, r * .5); g.lineTo(0, r * .35); g.lineTo(-r * .55, r * .5);
       g.closePath(); g.fill(); g.stroke();
       g.beginPath(); g.moveTo(0, -r * .3); g.lineTo(0, r * .35); g.stroke();
+      g.strokeStyle = 'rgba(200,250,255,.6)'; g.lineWidth = 1.6;
+      for (let i = 0; i < 3; i++) {                  // dòng chữ trong công thức
+        const y = -r * .12 + i * r * .18;
+        g.beginPath(); g.moveTo(-r * .42, y); g.lineTo(-r * .1, y + r * .04); g.stroke();
+        g.beginPath(); g.moveTo(r * .1, y + r * .04); g.lineTo(r * .42, y); g.stroke();
+      }
     }
   }
 };
@@ -657,7 +782,10 @@ for (const id in PASSIVES) {
   Art.build['i_' + id] = () => bake(72, (g, r) => p.icon(g, r * .82), 14, p.color);
 }
 
-/* ===================== ENEMIES ===================== */
+/* ===================== QUÁI — ĐỒ ĂN =====================
+   Tên id giữ nguyên (code khắp nơi tham chiếu tới), chỉ ghi kèm món tương ứng:
+     grunt = CÀ CHUA · swarm = CÀ RỐT · tank = BẮP CẢI TÍM · shooter = CHAI XỐT
+     splitter = BÔNG CẢI XANH · charger = BẮP NGÔ · bomber = THANH LONG · orbiter = ĐẬU HÀ LAN */
 const ENEMIES = {
   grunt: { sprite: 'e_grunt', r: 15, hp: 22, spd: 80, dmg: 9, xp: 1, color: '#ff4d5e', ai: 'chase' },
   swarm: { sprite: 'e_swarm', r: 10, hp: 10, spd: 136, dmg: 6, xp: 1, color: '#ffa62e', ai: 'chase' },
@@ -691,14 +819,14 @@ const SPAWN_TABLE = [
  *   ngồi nhìn, không phải thử thách mà là bị phạt.
  */
 const BOSS_RULES = {
-  bloodthirst: { name: 'KHÁT MÁU',  color: '#ff2e4d', desc: 'Không tự hồi máu · hút máu vô hiệu' },
-  gravity:     { name: 'HẤP LỰC',   color: '#c14dff', desc: 'Bị kéo về phía trùm' },
-  chained:     { name: 'XIỀNG XÍCH',color: '#ffb02e', desc: 'Không lướt được' },
-  frostbite:   { name: 'BĂNG GIÁ',  color: '#6fe6ff', desc: 'Tốc chạy −35%' },
-  inverted:    { name: 'ĐẢO CHIỀU', color: '#3affa0', desc: 'Điều khiển bị đảo ngược' },
-  eclipse:     { name: 'NHẬT THỰC', color: '#ff6a2e', desc: 'Chỉ nhìn thấy quanh mình' },
-  hive:        { name: 'TÁCH BẦY',  color: '#ff2e88', desc: 'Quái thường chết đều tách đôi' },
-  collapse:    { name: 'THU HẸP',   color: '#eafcff', desc: 'Đấu trường co lại dần' }
+  bloodthirst: { name: 'CAY XÉ LƯỠI', color: '#ff2e4d', desc: 'Không tự hồi máu · hút máu vô hiệu' },
+  gravity:     { name: 'HÚT XOÁY',    color: '#c14dff', desc: 'Bị kéo về phía nồi' },
+  chained:     { name: 'KHOÁ NẮP',    color: '#ffb02e', desc: 'Không lướt được' },
+  frostbite:   { name: 'TÊ BUỐT',     color: '#6fe6ff', desc: 'Tốc chạy −35%' },
+  inverted:    { name: 'SOI GƯƠNG',   color: '#3affa0', desc: 'Điều khiển bị đảo ngược' },
+  eclipse:     { name: 'CHÁY KHÉT',   color: '#ff6a2e', desc: 'Khói đen, chỉ nhìn thấy quanh mình' },
+  hive:        { name: 'CHIA SUẤT',   color: '#ff2e88', desc: 'Món thường chết đều tách đôi' },
+  collapse:    { name: 'BẾP CO LẠI',  color: '#eafcff', desc: 'Đấu trường co lại dần' }
 };
 
 /* ---------- TRÙM ----------
@@ -712,42 +840,42 @@ const BOSS_RULES = {
  */
 const BOSSES = [
   {
-    name: 'HUYẾT NHÃN', sprite: 'e_boss', color: '#ff2e4d', r: 56,
+    name: 'NỒI LẨU CAY', sprite: 'e_boss', color: '#ff2e4d', r: 56,
     hp: 1500, spd: 46, dmg: 26, xp: 60, rule: 'bloodthirst',
     patterns: ['radial', 'charge', 'summon']
   },
   {
-    name: 'HƯ KHÔNG GIẢ', sprite: 'e_boss2', color: '#c14dff', r: 58,
+    name: 'CỐI XAY SINH TỐ', sprite: 'e_boss2', color: '#c14dff', r: 58,
     hp: 3400, spd: 52, dmg: 30, xp: 110, rule: 'gravity',
     patterns: ['spiral', 'summon', 'laserSweep']
   },
   {
-    name: 'BẠO CHÚA THÉP', sprite: 'e_boss3', color: '#ffb02e', r: 62,
+    name: 'NỒI ÁP SUẤT BẠO CHÚA', sprite: 'e_boss3', color: '#ffb02e', r: 62,
     hp: 6800, spd: 58, dmg: 36, xp: 200, rule: 'chained',
     patterns: ['radial', 'spiral', 'charge', 'summon']
   },
   {
-    name: 'SƯƠNG HÀN VƯƠNG', sprite: 'e_boss4', color: '#6fe6ff', r: 60,
+    name: 'VUA KEM ỐC QUẾ', sprite: 'e_boss4', color: '#6fe6ff', r: 60,
     hp: 7000, spd: 50, dmg: 38, xp: 280, rule: 'frostbite',
     patterns: ['frostNova', 'radial', 'charge', 'summon']
   },
   {
-    name: 'NGHỊCH ẢNH', sprite: 'e_boss5', color: '#3affa0', r: 54,
+    name: 'THẠCH GƯƠNG', sprite: 'e_boss5', color: '#3affa0', r: 54,
     hp: 7600, spd: 68, dmg: 40, xp: 340, rule: 'inverted',
     patterns: ['mirrorDash', 'spiral', 'laserSweep']
   },
   {
-    name: 'HẮC NHẬT', sprite: 'e_boss6', color: '#ff6a2e', r: 66,
+    name: 'PIZZA HẮC ÁM', sprite: 'e_boss6', color: '#ff6a2e', r: 66,
     hp: 8200, spd: 46, dmg: 42, xp: 420, rule: 'eclipse',
     patterns: ['sunburst', 'radial', 'spiral', 'summon']
   },
   {
-    name: 'TRÙNG MẪU', sprite: 'e_boss7', color: '#ff2e88', r: 64,
+    name: 'TỔ TRỨNG CÁ', sprite: 'e_boss7', color: '#ff2e88', r: 64,
     hp: 8800, spd: 54, dmg: 44, xp: 500, rule: 'hive',
     patterns: ['broodSurge', 'radial', 'charge']
   },
   {
-    name: 'VÔ TẬN', sprite: 'e_boss8', color: '#eafcff', r: 70,
+    name: 'BÁNH KEM VÔ TẬN', sprite: 'e_boss8', color: '#eafcff', r: 70,
     hp: 9600, spd: 62, dmg: 48, xp: 640, rule: 'collapse',
     patterns: ['laserCross', 'spiral', 'radial', 'charge', 'summon']
   }

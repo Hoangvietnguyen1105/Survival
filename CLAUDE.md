@@ -1,8 +1,87 @@
-# NEON HORDE — bàn giao cho phiên làm việc mới
+# NEON KITCHEN — bàn giao cho phiên làm việc mới
 
 > **Đọc file này trước khi làm bất cứ gì.** Nó ghi lại toàn bộ trạng thái, các quyết định
 > kỹ thuật, cách kiểm thử, và những cái bẫy đã mất công mới tìm ra.
-> Cập nhật lần cuối: 2026-09-10, phiên 5 (cắt sức mạnh cuối game · chữa bệnh "không thể thua" · bảng debug).
+> Cập nhật lần cuối: 2026-09-10, phiên 5 (cắt sức mạnh cuối game · chữa bệnh "không thể thua" · bảng debug · THEME ĐẦU BẾP).
+
+---
+
+## ⚠️ ĐANG Ở NHÁNH `theme-dau-bep` — KHÔNG PHẢI `main`
+
+Nhánh này **chỉ đổi ART VÀ TÊN**, hoá thân thành **chuột đầu bếp đánh nhau với thức ăn**.
+**Toàn bộ số liệu cân bằng giống hệt `main`**, không chệch một con số nào — mục 4B, 4C,
+4D, 5, 5B, 5C, 5D vẫn đúng nguyên văn, chỉ cần đọc tên mới theo bảng tra dưới đây.
+
+> Tên nhánh git không nhận dấu cách và dấu tiếng Việt, nên nhánh tên `theme-dau-bep`
+> chứ không phải "theme đầu bếp".
+
+### Đã đổi những gì
+| File | Đổi gì |
+|---|---|
+| `web/js/gfx.js` | **Toàn bộ ~40 sprite**: 5 nhân vật, 8 quái, 8 trùm, 9 đạn, 8 vật phẩm. Thêm hàm dùng chung `ratChef()`. |
+| `web/js/data.js` | Tên + mô tả 5 nhân vật · tên + `tip` + `evoName` + `evoDesc` + **biểu tượng** 10 vũ khí · tên + **biểu tượng** 14 trang bị · tên 8 trùm + 8 luật đấu trường |
+| `web/js/sigils.js` | Ấn Ký → **BÍ KÍP**: tên, `awName`, `tip`, **biểu tượng** cả 5 |
+| `web/index.html` | Tiêu đề NEON KITCHEN, phụ đề, "CHỌN ĐẦU BẾP", mục hướng dẫn, tiêu đề màn kết thúc |
+| `web/icon.svg`, `web/manifest.json` | Biểu tượng ứng dụng: đầu chuột đội mũ đầu bếp |
+| `web/build.ps1` | Xuất ra `dist/NeonKitchen.html` (trước là `NeonHorde.html`) |
+| `web/tools/sprites.html` | **MỚI** — trang xem toàn bộ sprite, không chạy vòng lặp game |
+
+**KHÔNG đổi**: `game.js`, `entities.js`, `debug.js`, `ui.js`, `utils.js`, `audio.js`,
+`input.js`, `main.js`, và mọi con số cân bằng.
+
+### Bảng tra tên: `main` → `theme-dau-bep`
+
+| Nhân vật | | Vũ khí | | Tiến hoá | |
+|---|---|---|---|---|---|
+| VỆ BINH | BẾP TRƯỞNG | SÚNG XUNG KÍCH | SÚNG KEM | ĐẠN PHÂN LIỆT | KEM NỔ TUNG |
+| XẠ THỦ | THỢ KEM | SÚNG SĂN | LỌ TIÊU | PHÁO HẠM | NỒI ÁP SUẤT |
+| PHÁP SƯ | THỢ LÀM BÁNH | KIẾM XOAY | DAO PHAY XOAY | THIÊN LUÂN | CỐI XAY THỊT |
+| SÁT THỦ | THỢ SASHIMI | LÔI KÍCH | MÁY ĐÁNH TRỨNG | LÔI VŨ | BÃO LÒ VI SÓNG |
+| KỸ SƯ | THỢ NƯỚNG | BOM RẢI | BOM BỘT MÌ | BOM HẠT NHÂN | BOM MEN NỞ |
+| | | TIA TỬ THẦN | ĐÈN KHÒ | LĂNG KÍNH | KHÒ CẦU VỒNG |
+| | | BĂNG VỰC | NITƠ LẠNH | BÃO TUYẾT VĨNH CỬU | BÃO TUYẾT NITƠ |
+| | | TÊN LỬA TẦM NHIỆT | XÚC XÍCH TẦM NHIỆT | HOẢ TIỄN OANH TẠC | MƯA XÚC XÍCH |
+| | | HÀO QUANG HUỶ DIỆT | LÒ NƯỚNG ĐỎ LỬA | LÒ PHẢN ỨNG | LÒ QUÁ TẢI |
+| | | PHI TIÊU HỒI | ĐĨA BAY | LƯỠI HÁI TỬ THẦN | ĐĨA BAY VÔ TẬN |
+
+| Trang bị | | Ấn Ký → Bí Kíp | | Trùm | |
+|---|---|---|---|---|---|
+| NGỌC CƯỜNG LỰC | ỚT HIỂM | ẤN LÔI ĐÌNH | BÍ KÍP LÒ VI SÓNG | HUYẾT NHÃN | NỒI LẨU CAY |
+| ĐỒNG HỒ CÁT | ĐỒNG HỒ BẾP | ẤN HUYẾT NGUYỆT | BÍ KÍP DAO THỚT | HƯ KHÔNG GIẢ | CỐI XAY SINH TỐ |
+| GIÀY GIÓ | GIÀY CHỐNG TRƯỢT | ẤN BĂNG TINH | BÍ KÍP TỦ ĐÔNG | BẠO CHÚA THÉP | NỒI ÁP SUẤT BẠO CHÚA |
+| TIM THÉP | Ổ BÁNH MÌ | ẤN HƯ KHÔNG | BÍ KÍP CỐI XAY | SƯƠNG HÀN VƯƠNG | VUA KEM ỐC QUẾ |
+| GIÁP RỒNG | BAO TAY LÒ | ẤN PHƯỢNG HOÀNG | BÍ KÍP MEN NỞ | NGHỊCH ẢNH | THẠCH GƯƠNG |
+| NAM CHÂM | CÁI VÁ LỚN | | | HẮC NHẬT | PIZZA HẮC ÁM |
+| KÍNH SÁT THỦ | DAO MÀI SẮC | | | TRÙNG MẪU | TỔ TRỨNG CÁ |
+| MÓNG VUỐT | BÚA DẦN THỊT | | | VÔ TẬN | BÁNH KEM VÔ TẬN |
+| BÙA HỒI SINH | NƯỚC DÙNG HẦM | | | | |
+| ĐÁ MỞ RỘNG | CHẢO ĐẠI | | | | |
+| ỐNG ĐẠN PHỤ | THÊM MỘT SUẤT | | | | |
+| HUYẾT ẤN | XỐT CÀ CHUA | | | | |
+| ÁO CHOÀNG BÓNG | TẠP DỀ TRƠN | | | | |
+| SÁCH CỔ | SỔ CÔNG THỨC | | | | |
+
+**Quái** (`ENEMIES` không có trường `name`, chỉ đổi sprite + chú thích):
+grunt = CÀ CHUA · swarm = CÀ RỐT · charger = BẮP NGÔ · shooter = CHAI XỐT ·
+tank = BẮP CẢI TÍM · bomber = THANH LONG · splitter = BÔNG CẢI XANH · orbiter = ĐẬU HÀ LAN
+
+**Vật phẩm**: tim → **miếng phô mai** · nam châm → **cái vá** · bom hạt nhân → **bình cứu hoả** ·
+rương → **thùng nguyên liệu** · ngọc EXP → **hạt gia vị / lá thơm / hoa hồi**
+
+### 🎨 Sửa art thì đọc mục này trước
+
+- **Trang xem sprite: `web/tools/sprites.html`** — mở qua server tĩnh, nó vẽ toàn bộ sprite
+  ra một bảng. **Đừng vẽ bảng sprite lên canvas của game**: vòng lặp render của `main.js`
+  xoá sạch ngay khung hình sau, chụp ảnh không thấy gì (đã mất công vì cái này).
+- **Sprite nhân vật và quái được vẽ hướng MŨI QUAY LÊN (-Y)**, `drawPlayer`/`drawEnemy` xoay
+  theo `face + PI/2`. Vẽ đầu ở trên, đuôi ở dưới là đúng hướng chạy.
+- **`bake()` bật `shadowBlur` cho MỌI nét vẽ.** Cái gì cần giữ đúng màu — nhất là màu trắng —
+  thì phải `g.save(); g.shadowBlur = 0; ...; g.restore()`, nếu không nó bị nhuộm theo màu
+  quầng sáng. Mũ đầu bếp tô trắng mà không tắt quầng sáng thì nhìn ra một cục mờ, mất hai
+  lần thử mới ra.
+- **Thứ tự vẽ trong `ratChef()`** có ghi chú riêng trong `gfx.js`, đừng đảo: mũ phải vẽ
+  trước đầu và lùi về sau, mặt vẽ cuối cùng.
+- **Sprite quái thêm mới phải khai trong `GROUPS` của `sprites.html`** để còn xem được.
 
 ---
 
@@ -16,8 +95,9 @@ sống sót theo màn, nhặt EXP để lên cấp và chọn nâng cấp. Có *
 | **Web** (bản gốc, chuẩn để đối chiếu) | `web/` | ✅ Hoàn chỉnh, đã kiểm thử kỹ |
 | **Unity** (port) | `Assets/` | ✅ Đủ nội dung, biên dịch sạch · ⚠️ **chưa build & chạy thật sau đợt port trùm** · ⚠️ **CHƯA có đợt cân bằng phiên 5** — xem mục 5B & 7 |
 
-Chơi thử bản web ngay: mở `web/dist/NeonHorde.html` bằng trình duyệt (1 file, không cần mạng).
-Link đã xuất bản: <https://claude.ai/code/artifact/4ae35421-27da-45c3-b130-a3560571cd04>
+Chơi thử bản web ngay: mở `web/dist/NeonKitchen.html` bằng trình duyệt (1 file, không cần mạng).
+Link Artifact đã xuất bản là của **bản gốc trên `main`**, chưa cập nhật theme đầu bếp:
+<https://claude.ai/code/artifact/4ae35421-27da-45c3-b130-a3560571cd04>
 
 **Người dùng là dân không chuyên kỹ thuật, nói tiếng Việt.** Đừng bắt họ chọn giữa các
 phương án kỹ thuật — tự quyết rồi giải thích ngắn gọn bằng tiếng Việt. Toàn bộ chú thích
@@ -50,10 +130,10 @@ dùng công cụ Edit hoặc viết script PowerShell dùng `.Replace()` thay v�
 
 ### Chạy & build
 ```bash
-# chơi: mở web/dist/NeonHorde.html
+# chơi: mở web/dist/NeonKitchen.html
 # build lại bản 1 file sau khi sửa code:
 powershell -ExecutionPolicy Bypass -File web/build.ps1
-# -> web/dist/NeonHorde.html (bản đầy đủ)  +  web/dist/embed.html (bản nhúng Artifact)
+# -> web/dist/NeonKitchen.html (bản đầy đủ)  +  web/dist/embed.html (bản nhúng Artifact)
 ```
 
 ### Kiến trúc
@@ -73,6 +153,11 @@ web/js/  (thứ tự nạp phải giữ nguyên, khai báo trong index.html VÀ 
 ├── ui.js        `UI` — menu, thẻ bài, HUD, kết thúc
 ├── debug.js     ★ `Dbg` — BẢNG DEBUG để căn chỉnh (mục 2B). Không phải nội dung game.
 └── main.js      khởi động + vòng lặp render (có dự phòng nếu rAF bị chặn)
+
+web/tools/       (không được index.html hay build.ps1 nạp, chỉ dùng lúc phát triển)
+├── serve.ps1    server tĩnh (máy này không có node/python)
+├── bench.js     bàn đo sát thương + bot kiểm thử (mục 6)
+└── sprites.html trang xem toàn bộ sprite — dùng khi sửa art
 ```
 
 > Thêm file JS mới thì phải khai ở **CẢ HAI** chỗ: `index.html` và mảng `$jsFiles`

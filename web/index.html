@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#06070d">
-<title>NEON HORDE</title>
+<title>NEON KITCHEN</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -61,12 +61,12 @@
   <!-- ================= MENU ================= -->
   <div id="menu" class="screen">
     <div class="title-wrap">
-      <h1 class="title" data-text="NEON HORDE">NEON HORDE</h1>
-      <p class="subtitle">Sống sót giữa bầy quái · Roguelike Survivor</p>
+      <h1 class="title" data-text="NEON KITCHEN">NEON KITCHEN</h1>
+      <p class="subtitle">Chuột đầu bếp chống lại binh đoàn đồ ăn · Roguelike Survivor</p>
     </div>
 
     <div class="char-select">
-      <div class="section-label">CHỌN NHÂN VẬT</div>
+      <div class="section-label">CHỌN ĐẦU BẾP</div>
       <div id="charList" class="char-list"></div>
       <div id="charDesc" class="char-desc"></div>
     </div>
@@ -87,12 +87,12 @@
     <h2 class="panel-title">HƯỚNG DẪN</h2>
     <div class="howto-body">
       <div class="how-item"><b>Di chuyển — 3 cách</b><span><b>Chuột:</b> giữ chuột trái, nhân vật chạy tới con trỏ · <b>Ngón tay:</b> chạm &amp; kéo bất kỳ đâu để hiện cần điều khiển ảo · <b>Bàn phím:</b> WASD / phím mũi tên</span></div>
-      <div class="how-item"><b>Tấn công</b><span>Tự động! Vũ khí tự bắn kẻ địch gần nhất. Bạn chỉ cần né.</span></div>
+      <div class="how-item"><b>Tấn công</b><span>Tự động! Đồ nghề tự nhắm món ăn gần nhất. Bạn chỉ cần né.</span></div>
       <div class="how-item"><b>Lướt (Dash)</b><span>Space / Shift · <b>chuột phải</b> · nút DASH — miễn thương trong lúc lướt</span></div>
-      <div class="how-item"><b>Ngọc kinh nghiệm</b><span>Nhặt để lên cấp và chọn nâng cấp mới</span></div>
-      <div class="how-item"><b>Tiến hoá vũ khí</b><span>Vũ khí lên cấp TỐI ĐA + trang bị đi kèm đạt cấp 3 sẽ mở thẻ TIẾN HOÁ (viền vàng). Cả 10 vũ khí đều đổi hẳn cách hoạt động, không chỉ tăng số.</span></div>
-      <div class="how-item"><b>Ấn Ký (buff 4 tầng)</b><span>Thẻ viền hồng nét đứt. Tầng 4 bị KHOÁ cho tới khi bạn đạt đủ chỉ số ghi trên thẻ — ví dụ Ấn Lôi Đình cần Tốc đánh ≥ 150%. Tầng 4 là pha lật kèo.</span></div>
-      <div class="how-item"><b>Trùm</b><span>Xuất hiện mỗi 5 màn. Hạ trùm để nhận rương báu.</span></div>
+      <div class="how-item"><b>Nguyên liệu rơi ra</b><span>Nhặt để lên cấp và chọn nâng cấp mới. Miếng phô mai hồi máu — bạn là chuột mà.</span></div>
+      <div class="how-item"><b>Đột phá đồ nghề</b><span>Đồ nghề lên cấp TỐI ĐA + món phụ trợ đi kèm đạt cấp 3 sẽ mở thẻ TIẾN HOÁ (viền vàng). Cả 10 món đều đổi hẳn cách hoạt động, không chỉ tăng số.</span></div>
+      <div class="how-item"><b>Bí Kíp (buff 4 tầng)</b><span>Thẻ viền hồng nét đứt. Tầng 4 bị KHOÁ cho tới khi bạn đạt đủ chỉ số ghi trên thẻ — ví dụ Bí Kíp Lò Vi Sóng cần Tốc đánh ≥ 150%. Tầng 4 là pha lật kèo.</span></div>
+      <div class="how-item"><b>Món trùm</b><span>Xuất hiện mỗi 5 màn. Hạ nó để nhận thùng nguyên liệu.</span></div>
       <div class="how-item"><b>Tạm dừng</b><span>ESC / Nút II góc phải</span></div>
     </div>
     <button id="howBack" class="btn primary">QUAY LẠI</button>
@@ -132,7 +132,7 @@
 
   <!-- ================= GAME OVER ================= -->
   <div id="gameover" class="screen hidden">
-    <h2 class="panel-title" id="goTitle">BẠN ĐÃ GỤC NGÃ</h2>
+    <h2 class="panel-title" id="goTitle">BẾP CHÁY RỒI!</h2>
     <div class="result-grid" id="resultGrid"></div>
     <div id="goLoadout" class="go-loadout"></div>
     <div class="menu-actions">

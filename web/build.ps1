@@ -1,5 +1,5 @@
 # ============================================================
-#  NEON HORDE - build script
+#  NEON KITCHEN - build script
 #  Gop toan bo CSS + JS vao 1 file HTML duy nhat.
 #  Chay:  powershell -ExecutionPolicy Bypass -File build.ps1
 #  Ket qua: dist\NeonHorde.html  (mo truc tiep bang trinh duyet)
@@ -37,12 +37,12 @@ $standalone = @"
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>NEON HORDE</title>
+<title>NEON KITCHEN</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#06070d">
-<meta name="description" content="Roguelike survivor - song sot giua bay quai.">
+<meta name="description" content="Roguelike survivor - chuot dau bep chong lai binh doan do an.">
 <style>
 $css
 </style>
@@ -58,7 +58,7 @@ $js
 
 # --- 2) ban chi co noi dung (cho Claude Artifact / nhung vao trang khac) ---
 $embed = @"
-<title>NEON HORDE</title>
+<title>NEON KITCHEN</title>
 <style>
 $css
 </style>
@@ -69,9 +69,9 @@ $js
 "@
 
 $utf8 = New-Object System.Text.UTF8Encoding $false
-[System.IO.File]::WriteAllText((Join-Path $dist 'NeonHorde.html'), $standalone, $utf8)
+[System.IO.File]::WriteAllText((Join-Path $dist 'NeonKitchen.html'), $standalone, $utf8)
 [System.IO.File]::WriteAllText((Join-Path $dist 'embed.html'), $embed, $utf8)
 
-$size = [math]::Round((Get-Item (Join-Path $dist 'NeonHorde.html')).Length / 1KB, 1)
-Write-Host "OK -> dist\NeonHorde.html ($size KB)"
+$size = [math]::Round((Get-Item (Join-Path $dist 'NeonKitchen.html')).Length / 1KB, 1)
+Write-Host "OK -> dist\NeonKitchen.html ($size KB)"
 Write-Host "OK -> dist\embed.html"

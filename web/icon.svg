@@ -4,37 +4,57 @@
       <stop offset="0%" stop-color="#141c34"/>
       <stop offset="100%" stop-color="#06070d"/>
     </radialGradient>
-    <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#eafcff"/>
-      <stop offset="55%" stop-color="#25f4ee"/>
-      <stop offset="100%" stop-color="#ff2e88"/>
-    </linearGradient>
     <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
       <feGaussianBlur stdDeviation="14" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softglow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
 
   <rect width="512" height="512" rx="96" fill="url(#bg)"/>
 
-  <!-- arena grid -->
+  <!-- lưới sàn bếp -->
   <g stroke="#3f6bb5" stroke-opacity="0.18" stroke-width="2">
     <path d="M0 128h512M0 256h512M0 384h512M128 0v512M256 0v512M384 0v512"/>
   </g>
 
-  <!-- orbiting blades -->
-  <g filter="url(#glow)" opacity="0.9">
-    <circle cx="256" cy="256" r="150" fill="none" stroke="#25f4ee" stroke-opacity="0.35"
+  <!-- ba món ăn bay quanh -->
+  <g filter="url(#glow)" opacity="0.85">
+    <circle cx="256" cy="256" r="164" fill="none" stroke="#25f4ee" stroke-opacity="0.3"
             stroke-width="4" stroke-dasharray="18 26"/>
-    <circle cx="256" cy="106" r="15" fill="#eafcff"/>
-    <circle cx="386" cy="331" r="15" fill="#25f4ee"/>
-    <circle cx="126" cy="331" r="15" fill="#ff2e88"/>
+    <circle cx="256" cy="92" r="17" fill="#ff4d5e"/>
+    <circle cx="398" cy="338" r="17" fill="#b6ff3a"/>
+    <circle cx="114" cy="338" r="17" fill="#ffa62e"/>
   </g>
 
-  <!-- player ship -->
-  <g filter="url(#glow)">
-    <path d="M256 150 L340 350 L256 306 L172 350 Z" fill="url(#blade)"/>
-    <circle cx="256" cy="238" r="24" fill="#06070d" fill-opacity="0.55"/>
-    <circle cx="256" cy="238" r="13" fill="#ffffff"/>
+  <!-- CHUỘT ĐẦU BẾP -->
+  <g filter="url(#softglow)">
+    <!-- tai -->
+    <circle cx="176" cy="268" r="46" fill="#f6c9cf" stroke="#2b2320" stroke-width="9"/>
+    <circle cx="336" cy="268" r="46" fill="#f6c9cf" stroke="#2b2320" stroke-width="9"/>
+    <circle cx="176" cy="268" r="21" fill="#ff91af"/>
+    <circle cx="336" cy="268" r="21" fill="#ff91af"/>
+    <!-- đầu -->
+    <circle cx="256" cy="286" r="86" fill="#ff8a3c" stroke="#2b2320" stroke-width="10"/>
   </g>
+
+  <!-- mũ đầu bếp, không quầng sáng để giữ màu trắng -->
+  <g fill="#ffffff" stroke="#2b2320" stroke-width="10">
+    <circle cx="188" cy="212" r="46"/>
+    <circle cx="324" cy="212" r="46"/>
+    <circle cx="256" cy="176" r="56"/>
+  </g>
+  <rect x="182" y="224" width="148" height="34" rx="8" fill="#ffd9a8" stroke="#2b2320" stroke-width="9"/>
+
+  <!-- mõm, mũi, ria -->
+  <ellipse cx="256" cy="336" rx="40" ry="44" fill="#f6c9cf" stroke="#2b2320" stroke-width="9"/>
+  <circle cx="256" cy="360" r="17" fill="#ff5c80"/>
+  <g stroke="#2b2320" stroke-width="8" stroke-linecap="round">
+    <path d="M226 340 L146 314M226 356 L142 362M286 340 L366 314M286 356 L370 362"/>
+  </g>
+  <circle cx="226" cy="296" r="12" fill="#15100e"/>
+  <circle cx="286" cy="296" r="12" fill="#15100e"/>
 </svg>

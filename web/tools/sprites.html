@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Xem sprite — NEON KITCHEN</title>
+<style>
+  body{margin:0;background:#06070d;color:#dfe7ff;font:13px/1.5 system-ui,sans-serif}
+  h2{font-size:12px;letter-spacing:.22em;color:#ffc93c;margin:22px 12px 8px;
+     border-bottom:1px solid rgba(255,201,60,.2);padding-bottom:6px}
+  .row{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px}
+  .cell{width:112px;text-align:center;background:rgba(255,255,255,.03);
+        border:1px solid rgba(120,160,255,.16);border-radius:8px;padding:6px 2px 4px}
+  .cell canvas{display:block;margin:0 auto;image-rendering:auto}
+  .cell span{display:block;font:9px/1.4 monospace;color:#7b86a8;margin-top:4px;word-break:break-all}
+  #err{color:#ff8f9c;padding:10px 12px;font:11px monospace;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<!-- Trang xem toàn bộ sprite, KHÔNG chạy vòng lặp game.
+     Dùng khi sửa art: mở web/tools/sprites.html qua server tĩnh (web/tools/serve.ps1).
+     Vì sao cần trang riêng: nếu vẽ bảng sprite lên chính canvas của game thì vòng lặp
+     render của main.js xoá sạch ngay khung hình sau, chụp ảnh không thấy gì. -->
+<div id="out"></div>
+<div id="err"></div>
+
+<script src="../js/utils.js"></script>
+<script src="../js/gfx.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/sigils.js"></script>
+<script>
+const GROUPS = {
+  'NHÂN VẬT — CHUỘT ĐẦU BẾP': ['ch_guard', 'ch_ranger', 'ch_mage', 'ch_assassin', 'ch_engineer'],
+  'QUÁI — ĐỒ ĂN': ['e_grunt', 'e_swarm', 'e_charger', 'e_shooter', 'e_tank', 'e_bomber', 'e_splitter', 'e_orbiter'],
+  'TRÙM — MÓN KHỔNG LỒ': ['e_boss', 'e_boss2', 'e_boss3', 'e_boss4', 'e_boss5', 'e_boss6', 'e_boss7', 'e_boss8'],
+  'ĐẠN': ['b_basic', 'b_pellet', 'b_missile', 'b_bomb', 'b_blade', 'b_frost', 'b_enemy', 'b_shard', 'b_orb'],
+  'NHẶT ĐƯỢC': ['p_xp1', 'p_xp2', 'p_xp3', 'p_coin', 'p_heart', 'p_magnet', 'p_nuke', 'p_chest'],
+  'BIỂU TƯỢNG VŨ KHÍ': Object.keys(WEAPONS).map(k => 'w_' + k),
+  'BIỂU TƯỢNG TRANG BỊ': Object.keys(PASSIVES).map(k => 'i_' + k),
+  'BIỂU TƯỢNG ẤN KÝ': Object.keys(SIGILS).map(k => 's_' + k)
+};
+const out = document.getElementById('out');
+const errs = [];
+for (const title in GROUPS) {
+  const h = document.createElement('h2'); h.textContent = title; out.appendChild(h);
+  const row = document.createElement('div'); row.className = 'row'; out.appendChild(row);
+  for (const key of GROUPS[title]) {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    try {
+      const src = Art.get(key);
+      const c = document.createElement('canvas');
+      const sc = Math.min(92 / src.width, 92 / src.height, 1.6);
+      c.width = Math.round(src.width * sc); c.height = Math.round(src.height * sc);
+      c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
+      cell.appendChild(c);
+    } catch (e) { errs.push(key + ': ' + e.message); }
+    const s = document.createElement('span'); s.textContent = key;
+    cell.appendChild(s);
+    row.appendChild(cell);
+  }
+}
+if (errs.length) document.getElementById('err').textContent = 'LỖI:\n' + errs.join('\n');
+</script>
+</body>
+</html>

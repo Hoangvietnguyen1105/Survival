@@ -1,22 +1,22 @@
-/* ============ NEON HORDE — ẤN KÝ (buff 4 tầng) ============
+/* ============ NEON KITCHEN — BÍ KÍP (buff 4 tầng) ============
  *
- *  Khác trang bị bị động: mỗi Ấn Ký có 4 tầng, và TẦNG 4 BỊ KHOÁ sau một
- *  ngưỡng chỉ số. Mỗi Ấn tự cộng một ít đúng loại chỉ số nó cần, nhưng
- *  KHÔNG BAO GIỜ đủ một mình — bạn phải chủ động chọn trang bị tương ứng.
- *  => Chọn chỉ số gì sẽ quyết định mở được tầng cuối của Ấn nào.
+ *  Khác đồ nghề bị động: mỗi Bí Kíp có 4 tầng, và TẦNG 4 BỊ KHOÁ sau một
+ *  ngưỡng chỉ số. Mỗi Bí Kíp tự cộng một ít đúng loại chỉ số nó cần, nhưng
+ *  KHÔNG BAO GIỜ đủ một mình — bạn phải chủ động chọn đồ nghề tương ứng.
+ *  => Chọn chỉ số gì sẽ quyết định mở được tầng cuối của Bí Kíp nào.
  *
- *  Tầng 4 của mỗi Ấn là một pha "wow" hẳn, không phải cộng thêm vài %.
- * ========================================================== */
+ *  Tầng 4 của mỗi Bí Kíp là một pha "wow" hẳn, không phải cộng thêm vài %.
+ * ============================================================ */
 'use strict';
 
 const SIGILS = {
 
   /* ================= 1. ẤN LÔI ĐÌNH ================= */
   thunder: {
-    name: 'ẤN LÔI ĐÌNH', color: '#9d6bff', max: 4,
-    tip: 'Cứ vài đòn đánh lại phóng ra một tia sét.',
+    name: 'BÍ KÍP LÒ VI SÓNG', color: '#9d6bff', max: 4,
+    tip: 'Cứ vài đòn lại phóng ra một tia điện.',
     req: { key: 'haste', min: 1.5, label: 'Tốc đánh ≥ 150%' },
-    awName: 'BÃO LÔI VÔ TẬN',
+    awName: 'BÃO VI SÓNG',
     apply: (s, lv) => { s.haste += .05 * lv; },
     desc: lv => [
       'Cứ <em>8</em> đòn đánh phóng 1 tia sét',
@@ -24,14 +24,19 @@ const SIGILS = {
       'Cứ <em>5</em> đòn · lan <em>4</em> · làm <em>choáng</em>',
       'Cứ <em>4</em> đòn · lan <em>12</em> mục tiêu · sét chuyển <em>trắng–vàng</em> và <em>MẠNH DẦN +18%</em> sau mỗi lần nảy'
     ][lv - 1],
-    icon(g, r) {
-      g.strokeStyle = '#9d6bff'; g.lineWidth = 2.2;
-      poly(g, 4, r * .82); g.stroke();
-      g.fillStyle = '#e6d4ff'; g.strokeStyle = '#c9a8ff'; g.lineWidth = 1.6;
+    icon(g, r) {                                  // cửa lò vi sóng + tia điện
+      g.strokeStyle = '#9d6bff'; g.lineWidth = 2.4;
+      g.beginPath(); g.rect(-r * .78, -r * .58, r * 1.56, r * 1.16);
+      g.fillStyle = 'rgba(157,107,255,.16)'; g.fill(); g.stroke();
+      g.strokeStyle = 'rgba(217,196,255,.55)'; g.lineWidth = 1.4;
+      for (let i = -1; i <= 2; i++) {               // lưới cửa lò
+        g.beginPath(); g.moveTo(i * r * .3, -r * .58); g.lineTo(i * r * .3, r * .58); g.stroke();
+      }
+      g.fillStyle = '#ffe23c';                      // tia điện
       g.beginPath();
-      g.moveTo(r * .12, -r * .58); g.lineTo(-r * .32, r * .04); g.lineTo(-r * .02, r * .04);
-      g.lineTo(-r * .16, r * .58); g.lineTo(r * .34, -r * .1); g.lineTo(r * .03, -r * .1);
-      g.closePath(); g.fill(); g.stroke();
+      g.moveTo(r * .1, -r * .5); g.lineTo(-r * .3, r * .02); g.lineTo(0, r * .02);
+      g.lineTo(-r * .14, r * .5); g.lineTo(r * .3, -r * .08); g.lineTo(r * .02, -r * .08);
+      g.closePath(); g.fill();
     },
     /* Hàng rào thời gian của onHit — xem chú thích ngay dưới. */
     tick(G, st, dt) { if (st.cd > 0) st.cd -= dt; },
@@ -61,10 +66,10 @@ const SIGILS = {
 
   /* ================= 2. ẤN HUYẾT NGUYỆT ================= */
   bloodmoon: {
-    name: 'ẤN HUYẾT NGUYỆT', color: '#ff2e88', max: 4,
-    tip: 'Càng đánh kẻ địch thoi thóp càng đau.',
+    name: 'BÍ KÍP DAO THỚT', color: '#ff2e88', max: 4,
+    tip: 'Món nào sắp tàn thì một nhát là xong.',
     req: { key: 'lifesteal', min: .05, label: 'Hút máu ≥ 5%' },
-    awName: 'NGUYỆT THỰC',
+    awName: 'HẠ DAO',
     apply: (s, lv) => { s.lifesteal += .008 * lv; },
     desc: lv => [
       'Hút máu <em>+0.8%</em> mỗi tầng',
@@ -72,18 +77,21 @@ const SIGILS = {
       'Mỗi lần hạ gục hồi <em>2</em> máu',
       '<em>HÀNH QUYẾT</em> tức thì mọi kẻ địch dưới <em>25%</em> máu — mỗi xác nổ thành <em>sóng máu</em> lan sang xung quanh'
     ][lv - 1],
-    icon(g, r) {
-      g.fillStyle = '#ff2e88';
-      g.beginPath(); g.arc(0, 0, r * .72, 0, TAU); g.fill();
-      g.globalCompositeOperation = 'destination-out';
-      g.beginPath(); g.arc(r * .38, -r * .18, r * .62, 0, TAU); g.fill();
-      g.globalCompositeOperation = 'source-over';
-      g.fillStyle = '#ffd0e6';
-      g.beginPath();
-      g.moveTo(-r * .1, -r * .1);
-      g.bezierCurveTo(r * .3, r * .18, r * .16, r * .6, -r * .1, r * .6);
-      g.bezierCurveTo(-r * .36, r * .6, -r * .5, r * .18, -r * .1, -r * .1);
-      g.fill();
+    icon(g, r) {                                  // cái thớt gỗ + dao phay cắm xuống
+      g.beginPath(); g.rect(-r * .74, -r * .3, r * 1.48, r * .9);
+      g.fillStyle = 'rgba(120,72,40,.85)'; g.fill();
+      g.strokeStyle = '#ff2e88'; g.lineWidth = 2.4; g.stroke();
+      g.strokeStyle = 'rgba(255,208,230,.4)'; g.lineWidth = 1.4;
+      for (let i = -1; i <= 1; i++) {               // thớ gỗ
+        g.beginPath(); g.moveTo(-r * .7, i * r * .22 + r * .16); g.lineTo(r * .7, i * r * .22 + r * .16); g.stroke();
+      }
+      g.save(); g.rotate(.38);                      // lưỡi dao
+      g.beginPath(); g.rect(-r * .3, -r * .78, r * .62, r * .5);
+      g.fillStyle = '#ffe0ee'; g.fill();
+      g.strokeStyle = '#ff2e88'; g.lineWidth = 2; g.stroke();
+      g.fillStyle = '#3a2a12';                      // cán dao
+      g.fillRect(r * .3, -r * .68, r * .34, r * .18);
+      g.restore();
     },
     dmgMul(G, st, e) {
       return (st.lv >= 2 && e.hp / e.maxHp < .25) ? 1.35 : 1;
@@ -105,10 +113,10 @@ const SIGILS = {
 
   /* ================= 3. ẤN BĂNG TINH ================= */
   frost: {
-    name: 'ẤN BĂNG TINH', color: '#6fe6ff', max: 4,
-    tip: 'Làm chậm, rồi nghiền nát cái gì đã chậm.',
+    name: 'BÍ KÍP TỦ ĐÔNG', color: '#6fe6ff', max: 4,
+    tip: 'Làm lạnh, rồi đập vỡ cái gì đã đông.',
     req: { key: 'area', min: 1.5, label: 'Phạm vi ≥ 150%' },
-    awName: 'THỜI GIAN NGỪNG TRÔI',
+    awName: 'ĐÔNG ĐÁ TOÀN BẾP',
     apply: (s, lv) => { s.area += .06 * lv; },
     desc: lv => [
       '<em>18%</em> đòn đánh làm chậm <em>25%</em>',
@@ -116,17 +124,22 @@ const SIGILS = {
       'Kẻ địch chết khi đang chậm sẽ <em>nổ băng</em>',
       'Cứ <em>11 giây</em> <em>ĐÓNG BĂNG TOÀN MÀN HÌNH</em> 2 giây — xác đóng băng <em>vỡ tan</em> thành mảnh băng xuyên thấu'
     ][lv - 1],
-    icon(g, r) {
-      g.strokeStyle = '#6fe6ff'; g.lineWidth = 2.4; g.lineCap = 'round';
+    icon(g, r) {                                  // cánh tủ đông + bông tuyết
+      g.beginPath(); g.rect(-r * .6, -r * .8, r * 1.2, r * 1.6);
+      g.fillStyle = 'rgba(111,230,255,.16)'; g.fill();
+      g.strokeStyle = '#6fe6ff'; g.lineWidth = 2.4; g.stroke();
+      g.beginPath(); g.moveTo(-r * .6, -r * .12); g.lineTo(r * .6, -r * .12); g.stroke();
+      g.strokeStyle = '#d6f6ff'; g.lineWidth = r * .1; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(r * .4, -r * .56); g.lineTo(r * .4, -r * .3); g.stroke();
+      g.beginPath(); g.moveTo(r * .4, r * .16); g.lineTo(r * .4, r * .5); g.stroke();
+      g.strokeStyle = '#eafcff'; g.lineWidth = 2.2;  // bông tuyết trong tủ
       for (let i = 0; i < 3; i++) {
         const a = i / 3 * Math.PI;
         g.beginPath();
-        g.moveTo(-Math.cos(a) * r * .78, -Math.sin(a) * r * .78);
-        g.lineTo(Math.cos(a) * r * .78, Math.sin(a) * r * .78);
+        g.moveTo(-r * .22 - Math.cos(a) * r * .26, r * .36 - Math.sin(a) * r * .26);
+        g.lineTo(-r * .22 + Math.cos(a) * r * .26, r * .36 + Math.sin(a) * r * .26);
         g.stroke();
       }
-      g.fillStyle = '#d6f6ff';
-      star(g, 6, r * .34, r * .14); g.fill();
     },
     dmgMul(G, st, e) { return (st.lv >= 2 && e.slowAmt > .02) ? 1.25 : 1; },
     onHit(G, st, e) {
@@ -152,10 +165,10 @@ const SIGILS = {
 
   /* ================= 4. ẤN HƯ KHÔNG ================= */
   void: {
-    name: 'ẤN HƯ KHÔNG', color: '#c14dff', max: 4,
-    tip: 'Bẻ cong không gian: hút vật phẩm, rồi hút cả kẻ địch.',
+    name: 'BÍ KÍP CỐI XAY', color: '#c14dff', max: 4,
+    tip: 'Cối xay hút nguyên liệu, rồi hút cả món ăn.',
     req: { key: 'pickup', min: 250, label: 'Tầm hút ≥ 250' },
-    awName: 'HỐ ĐEN NGUYÊN THUỶ',
+    awName: 'CỐI XAY VŨ TRỤ',
     apply: (s, lv) => { s.pickup += 30 * lv; },
     desc: lv => [
       'Tầm hút vật phẩm <em>+30</em> mỗi tầng',
@@ -163,13 +176,21 @@ const SIGILS = {
       'Lỗ đen <em>nghiền</em> kẻ địch bên trong',
       '<em>HỐ ĐEN KHỔNG LỒ</em> nuốt cả màn hình, khi tan thì <em>NỔ SIÊU TÂN TINH</em> và hút sạch ngọc toàn bản đồ'
     ][lv - 1],
-    icon(g, r) {
+    icon(g, r) {                                  // cối xay: xoáy hút + lưỡi dao
       const grd = g.createRadialGradient(0, 0, r * .1, 0, 0, r * .8);
       grd.addColorStop(0, '#000'); grd.addColorStop(.55, '#2a0a44'); grd.addColorStop(1, 'rgba(193,77,255,0)');
       g.fillStyle = grd; g.beginPath(); g.arc(0, 0, r * .8, 0, TAU); g.fill();
-      g.strokeStyle = '#c14dff'; g.lineWidth = 2.6;
-      g.beginPath(); g.ellipse(0, 0, r * .78, r * .3, -.4, 0, TAU); g.stroke();
-      g.fillStyle = '#000'; g.beginPath(); g.arc(0, 0, r * .3, 0, TAU); g.fill();
+      g.strokeStyle = '#c14dff'; g.lineWidth = 2.6;   // thành cối
+      g.beginPath(); g.moveTo(-r * .6, -r * .78); g.lineTo(-r * .44, r * .7);
+      g.lineTo(r * .44, r * .7); g.lineTo(r * .6, -r * .78); g.stroke();
+      g.beginPath(); g.ellipse(0, -r * .78, r * .6, r * .18, 0, 0, TAU); g.stroke();
+      g.fillStyle = '#e9c6ff';                        // 4 lưỡi dao xay
+      for (let i = 0; i < 4; i++) {
+        g.save(); g.rotate(i / 4 * TAU + .4);
+        g.beginPath(); g.moveTo(0, r * .2); g.lineTo(r * .4, r * .12); g.lineTo(r * .4, r * .28);
+        g.closePath(); g.fill();
+        g.restore();
+      }
     },
     tick(G, st, dt) {
       if (st.lv < 2) return;
@@ -189,7 +210,7 @@ const SIGILS = {
 
   /* ================= 5. ẤN PHƯỢNG HOÀNG ================= */
   phoenix: {
-    name: 'ẤN PHƯỢNG HOÀNG', color: '#ff8a3c', max: 4,
+    name: 'BÍ KÍP MEN NỞ', color: '#ff8a3c', max: 4,
     tip: 'Càng gần chết càng mạnh — và chết rồi vẫn đứng dậy.',
     req: { key: 'maxHp', min: 200, label: 'Máu tối đa ≥ 200' },
     awName: 'TÁI SINH TỪ TRO TÀN',
@@ -200,16 +221,23 @@ const SIGILS = {
       'Dưới <em>35%</em> máu: <em>+35%</em> tốc chạy, <em>+25%</em> sát thương',
       '<em>TÁI SINH</em>: lần đầu gục ngã sẽ sống lại với <em>60%</em> máu, <em>thiêu rụi</em> toàn màn hình và bất tử <em>3 giây</em>'
     ][lv - 1],
-    icon(g, r) {
-      g.fillStyle = '#ff8a3c'; g.strokeStyle = '#ffd9a8'; g.lineWidth = 1.6;
-      g.beginPath();
-      g.moveTo(0, -r * .72);
-      g.bezierCurveTo(r * .52, -r * .3, r * .82, r * .22, r * .34, r * .66);
-      g.bezierCurveTo(r * .16, r * .3, -r * .16, r * .3, -r * .34, r * .66);
-      g.bezierCurveTo(-r * .82, r * .22, -r * .52, -r * .3, 0, -r * .72);
-      g.fill(); g.stroke();
-      g.fillStyle = '#fff2c4';
-      g.beginPath(); g.arc(0, r * .06, r * .17, 0, TAU); g.fill();
+    icon(g, r) {                                  // ổ bánh nở bung trong lửa
+      g.strokeStyle = '#ff8a3c'; g.lineWidth = 2.6; g.lineCap = 'round';
+      for (let i = -1; i <= 1; i++) {               // ngọn lửa dưới đáy
+        g.beginPath();
+        g.moveTo(i * r * .34, r * .74);
+        g.quadraticCurveTo(i * r * .34 + r * .2, r * .3, i * r * .34, r * .04);
+        g.stroke();
+      }
+      g.beginPath();                                // ổ bánh phồng
+      g.moveTo(-r * .62, r * .1);
+      g.bezierCurveTo(-r * .62, -r * .78, r * .62, -r * .78, r * .62, r * .1);
+      g.closePath();
+      g.fillStyle = '#e8a05c'; g.fill();
+      g.strokeStyle = '#ffd9a8'; g.lineWidth = 2.2; g.stroke();
+      g.strokeStyle = '#fff2c4'; g.lineWidth = 2.4;  // vết nứt vỏ bánh
+      g.beginPath(); g.moveTo(-r * .26, -r * .24); g.lineTo(r * .04, -r * .5); g.stroke();
+      g.beginPath(); g.moveTo(r * .1, -r * .2); g.lineTo(r * .38, -r * .42); g.stroke();
     },
     tick(G, st, dt) {
       const p = G.player;
